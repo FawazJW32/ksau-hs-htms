@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>KSAU-HS | Healthcare Technology Management Services (HTMS)</title>
+  <title>KSAU-HS | Respiratory Therapy Skills Labs • Inventory & Contingency</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- SheetJS with Full Cell Styling (xlsx-js-style) -->
+  <!-- SheetJS Styled Excel Export -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-  <!-- QRCode.js for Instant Mobile/Desktop QR Code Generation -->
+  <!-- QRCode Generator -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- html2pdf.js for Direct Official A4 PDF Download inside Sandboxed Preview -->
+  <!-- HTML2PDF for Official A4 Report Generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -28,16 +28,14 @@
           },
           colors: {
             ksau: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              200: '#bbf7d0',
-              500: '#15803d',
-              600: '#0f6838',
-              700: '#0b532d',
-              800: '#083f22',
-              900: '#052916',
+              50: '#f2fbf6',
+              100: '#e1f6ea',
+              200: '#c3ecd5',
+              600: '#136f3a',
+              700: '#0e582e',
+              800: '#094021',
+              900: '#052915',
               950: '#02170c',
-              gold: '#9e7b2f',
               goldlight: '#fcf6c5',
               goldbright: '#c5a059'
             }
@@ -48,84 +46,85 @@
   </script>
 
   <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: #f4f7f5;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(19, 111, 58, 0.06) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(197, 160, 89, 0.07) 0px, transparent 50%);
+      overflow-x: hidden;
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     @keyframes floatEmblem {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-4px); }
     }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
+    .animate-fade-up { animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .animate-float { animation: floatEmblem 4.5s ease-in-out infinite; }
-    .animate-fade-up { animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .ksau-mesh-bg {
-      background: linear-gradient(-45deg, #02170c, #083f22, #0f6838, #052916);
-      background-size: 300% 300%;
-      animation: gradientBG 15s ease infinite;
-    }
-
-    .custom-scroll::-webkit-scrollbar { width: 7px; height: 7px; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
     @media print {
       body * { visibility: hidden; }
       #printable-report-area, #printable-report-area * { visibility: visible; }
-      #printable-report-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        box-shadow: none !important;
-        border: none !important;
-      }
+      #printable-report-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; border: none !important; }
       .no-print { display: none !important; }
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-ksau-600 selection:text-white">
+<body class="text-slate-800 font-sans min-h-screen flex flex-col selection:bg-ksau-600 selection:text-white">
 
-  <!-- Hidden file input to let Admin upload exact local images_2.jpg permanently -->
-  <input type="file" id="logo-file-input" accept="image/*" class="hidden" onchange="handleLogoFileUpload(event)" />
+  <!-- Hidden File Input for Official Emblem Upload -->
+  <input type="file" id="global-logo-upload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)" />
 
-  <!-- ================= OFFICIAL UNIVERSITY LOGIN SCREEN ================= -->
-  <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center ksau-mesh-bg p-4 overflow-y-auto">
-    <!-- Top Language Switcher -->
-    <div class="fixed top-5 right-5 z-50">
+  <!-- ================= AUTHENTICATION & LOGIN PORTAL ================= -->
+  <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style="background: radial-gradient(circle at 25% 20%, #136f3a 0%, #094021 50%, #02170c 100%);">
+    <div class="fixed top-5 right-5 z-20 flex items-center gap-2">
       <button onclick="toggleLanguage()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md text-xs font-bold tracking-wide transition shadow-lg">
-        <i data-lucide="globe" class="w-4 h-4 text-ksau-goldbright"></i>
+        <i data-lucide="languages" class="w-4 h-4 text-ksau-goldbright"></i>
         <span id="login-lang-btn">العربية</span>
       </button>
     </div>
 
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-white/20 animate-fade-up my-auto">
-      <!-- Official Header Banner -->
+    <div class="relative w-full max-w-[440px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/25 animate-fade-up my-auto">
       <div class="bg-gradient-to-b from-ksau-800 via-ksau-700 to-ksau-800 px-6 pt-8 pb-6 text-center text-white relative border-b-4 border-ksau-goldbright">
         <div class="w-28 h-28 mx-auto mb-3 rounded-full bg-white p-1 shadow-xl animate-float cursor-pointer relative group" onclick="triggerLogoUpload()" title="Official KSAU-HS Emblem">
           <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
         </div>
-        <p class="font-arabic text-base font-bold text-ksau-goldlight tracking-wide mb-1">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
+        <p class="font-arabic text-sm font-bold text-ksau-goldlight tracking-wide mb-1">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
         <h1 class="text-base font-extrabold tracking-tight uppercase text-white" data-i18n="uniName">King Saud bin Abdulaziz University for Health Sciences</h1>
-        <p class="text-xs text-emerald-200 mt-1 font-medium" data-i18n="htmsSubtitle">Healthcare Technology Management Services (HTMS)</p>
+        <p class="text-xs text-emerald-200 mt-1 font-medium" data-i18n="htmsSubtitle">Respiratory Therapy Skills Labs • Inventory & Contingency System</p>
       </div>
 
-      <!-- Clean Official Sign-In Form (No Exposed Passwords or Dev Badges) -->
-      <form id="login-form" onsubmit="handleLogin(event)" class="p-7 space-y-5 bg-white">
-        <div class="border-b border-slate-100 pb-3">
-          <h2 class="text-lg font-extrabold text-slate-900" data-i18n="portalSignIn">HTMS Portal Sign In</h2>
+      <!-- Mode Switch Tabs on Login Portal: Sign In vs Create Account -->
+      <div id="login-mode-tabs" class="grid grid-cols-2 bg-slate-100 p-1.5 mx-7 mt-6 rounded-2xl border border-slate-200">
+        <button type="button" id="tab-login-signin" onclick="switchLoginPortalView('signin')" class="py-2 rounded-xl text-xs font-extrabold transition bg-white text-ksau-800 shadow-sm">
+          Sign In
+        </button>
+        <button type="button" id="tab-login-register" onclick="switchLoginPortalView('register')" class="py-2 rounded-xl text-xs font-extrabold transition text-slate-600 hover:text-slate-900">
+          Create Account
+        </button>
+      </div>
+
+      <!-- VIEW A: SIGN IN FORM -->
+      <form id="login-form" onsubmit="handleLogin(event)" class="p-7 pt-5 space-y-4 bg-white">
+        <div class="border-b border-slate-100 pb-2.5">
+          <h2 class="text-lg font-extrabold text-slate-900" data-i18n="portalSignIn">Staff Portal Sign In</h2>
           <p class="text-xs text-slate-500 mt-0.5" data-i18n="portalSignInSub">Enter your authorized university credentials to access the system</p>
         </div>
 
         <div id="login-error" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-center gap-2">
           <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
           <span id="login-error-text">Invalid username or password.</span>
+        </div>
+
+        <div id="login-success-banner" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+          <i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 text-emerald-600"></i>
+          <span id="login-success-text">Account updated successfully. Please sign in.</span>
         </div>
 
         <div>
@@ -139,7 +138,12 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5" data-i18n="passwordLabel">Password</label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600" data-i18n="passwordLabel">Password</label>
+            <button type="button" onclick="switchLoginPortalView('forgot')" class="text-xs font-extrabold text-ksau-600 hover:text-ksau-800 hover:underline">
+              Forgot Password?
+            </button>
+          </div>
           <div class="relative">
             <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute top-3.5 left-3.5 rtl:left-auto rtl:right-3.5"></i>
             <input type="password" id="login-password" required autocomplete="current-password"
@@ -156,9 +160,145 @@
           <span data-i18n="signInBtn">Authenticate & Enter Portal</span>
         </button>
 
-        <div class="pt-3 border-t border-slate-100 text-center">
-          <p class="text-[11px] text-slate-400 font-medium" data-i18n="loginFooter">College of Applied Medical Sciences • Central Region • Riyadh</p>
+        <div class="pt-3 border-t border-slate-100 text-center space-y-1">
+          <p class="text-[11px] text-slate-500 font-medium" data-i18n="loginFooter">College of Applied Medical Sciences • Central Region • Riyadh</p>
+          <p class="text-[11px] text-slate-400">muftiab@ksau-hs.edu.sa • Phone: 0114299999 ext. 98317</p>
         </div>
+      </form>
+
+      <!-- VIEW B: CREATE ACCOUNT DIRECTLY FROM LOGIN PORTAL -->
+      <form id="register-portal-form" onsubmit="handlePortalCreateAccount(event)" class="hidden p-7 pt-5 space-y-3.5 bg-white">
+        <div class="border-b border-slate-100 pb-2.5">
+          <h2 class="text-lg font-extrabold text-slate-900">Create Staff Account</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Set up your username, password, and recovery email address</p>
+        </div>
+
+        <div id="reg-portal-error" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold"></div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Full Name *</label>
+          <input type="text" id="reg-portal-name" required
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+            placeholder="e.g. Khalid Al-Harbi" />
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Email Address (For Password Reset Link) *</label>
+          <input type="email" id="reg-portal-email" required
+            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+            placeholder="yourname@ksau-hs.edu.sa" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Username *</label>
+            <input type="text" id="reg-portal-username" required autocomplete="off"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+              placeholder="e.g. kalharbi" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">Password *</label>
+            <input type="password" id="reg-portal-password" required autocomplete="new-password"
+              class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+              placeholder="Min. 4 chars" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 px-4 bg-ksau-600 hover:bg-ksau-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+          <i data-lucide="user-plus" class="w-4 h-4"></i>
+          <span>Create Account & Sign In</span>
+        </button>
+      </form>
+
+      <!-- VIEW C: FORGOT PASSWORD (SEND EMAIL RESET LINK) -->
+      <div id="forgot-portal-view" class="hidden p-7 pt-5 space-y-4 bg-white">
+        <div class="border-b border-slate-100 pb-2.5 flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-extrabold text-slate-900">Forgot Password Recovery</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Enter the email address or username linked to your account</p>
+          </div>
+        </div>
+
+        <form id="forgot-request-form" onsubmit="handleForgotPasswordRequest(event)" class="space-y-4">
+          <div id="forgot-error-box" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold"></div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Registered Email Address or Username *</label>
+            <div class="relative">
+              <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute top-3.5 left-3.5"></i>
+              <input type="text" id="forgot-identifier-input" required
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+                placeholder="email@ksau-hs.edu.sa or username" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3 px-4 bg-ksau-600 hover:bg-ksau-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Send Password Reset Link to Email</span>
+          </button>
+        </form>
+
+        <!-- Email Dispatched Confirmation Box with Direct Reset Link -->
+        <div id="forgot-dispatched-box" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="mail-check" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+            <div class="text-xs text-emerald-950 space-y-1">
+              <p class="font-extrabold">Password Reset Link Generated & Sent!</p>
+              <p>Recipient Email: <strong id="forgot-sent-email" class="font-mono underline"></strong></p>
+              <p class="text-[11px] text-emerald-800">Click the reset link below (or in your email client) to open the password reset page and set your new password:</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 pt-1">
+            <button type="button" id="btn-open-reset-link-now" class="w-full py-2.5 px-3 rounded-xl bg-ksau-700 hover:bg-ksau-800 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 shadow">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              <span>Open Password Reset Link Now</span>
+            </button>
+            <a id="btn-mailto-reset-link" href="#" class="w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-50 text-ksau-800 border border-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5 text-center">
+              <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+              <span>Open Email Message in Mail App</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 text-center">
+          <button type="button" onclick="switchLoginPortalView('signin')" class="text-xs font-bold text-slate-600 hover:text-ksau-700">
+            ← Back to Sign In
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW D: RESET PASSWORD VIA EMAIL LINK -->
+      <form id="reset-via-link-form" onsubmit="handleCompletePasswordResetFromLink(event)" class="hidden p-7 pt-5 space-y-4 bg-white">
+        <div class="border-b border-slate-100 pb-2.5">
+          <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase">Verified Email Reset Link</span>
+          <h2 class="text-lg font-extrabold text-slate-900 mt-1">Set Your New Password</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Account: <strong id="reset-link-account-label" class="text-ksau-700 font-mono"></strong></p>
+        </div>
+
+        <input type="hidden" id="reset-link-username" />
+        <input type="hidden" id="reset-link-token" />
+
+        <div id="reset-link-error" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold"></div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">New Password *</label>
+          <input type="password" id="reset-link-new-pass" required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+            placeholder="Enter new password" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Confirm New Password *</label>
+          <input type="password" id="reset-link-confirm-pass" required
+            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
+            placeholder="Confirm new password" />
+        </div>
+
+        <button type="submit" class="w-full py-3 px-4 bg-ksau-600 hover:bg-ksau-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+          <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+          <span>Save New Password & Sign In</span>
+        </button>
       </form>
     </div>
   </div>
@@ -176,10 +316,10 @@
           <div>
             <div class="flex items-center gap-2">
               <p class="font-arabic text-sm font-bold text-ksau-goldlight">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-              <span class="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full bg-white/10 text-emerald-200 font-semibold border border-white/15">HTMS</span>
+              <span class="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full bg-white/10 text-emerald-200 font-semibold border border-white/15">RT LABS</span>
             </div>
-            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white" data-i18n="headerTitle">KSAU-HS • Healthcare Technology Management Services</h1>
-            <p class="text-[11px] text-emerald-200/90 font-medium" data-i18n="headerSub">Central Region • College of Applied Medical Sciences (Male) • Respiratory Therapy Skills Labs</p>
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white" data-i18n="headerTitle">KSAU-HS • Respiratory Therapy Skills Lab Inventory & Contingency</h1>
+            <p class="text-[11px] text-emerald-200/90 font-medium" data-i18n="headerSub">Central Region • College of Applied Medical Sciences (Male) • Labs CM-01-158 & CM-01-162</p>
           </div>
         </div>
 
@@ -188,16 +328,22 @@
           <!-- Logged-in Staff Pill -->
           <div class="flex items-center gap-2.5 bg-white/10 border border-white/15 rounded-xl px-3 py-1.5 backdrop-blur-sm">
             <div id="user-avatar" class="w-8 h-8 rounded-lg bg-ksau-goldbright text-ksau-950 font-extrabold text-xs flex items-center justify-center shadow">
-              EO
+              AM
             </div>
             <div class="leading-tight">
               <div class="flex items-center gap-1.5">
-                <span id="user-display-name" class="text-xs font-bold text-white">Eng. Obaid Shaya Al Jarwi</span>
-                <span id="user-role-badge" class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-ksau-goldbright/30 text-ksau-goldlight border border-ksau-goldbright/40">ADMIN</span>
+                <span id="user-display-name" class="text-xs font-bold text-white">Abdulrahman Mufti</span>
+                <span id="user-role-badge" class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-ksau-goldbright/30 text-ksau-goldlight border border-ksau-goldbright/40">RT SPECIALIST</span>
               </div>
-              <p id="user-badge-line" class="text-[10px] text-emerald-200 font-mono">Badge #68459</p>
+              <p id="user-contact-line" class="text-[10px] text-emerald-200 font-mono">muftiab@ksau-hs.edu.sa</p>
             </div>
           </div>
+
+          <!-- Password Reset Button in Main Portal Header -->
+          <button onclick="openPasswordResetModal()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition" title="Reset My Password">
+            <i data-lucide="key-round" class="w-4 h-4 text-ksau-goldbright"></i>
+            <span class="hidden xl:inline" data-i18n="resetPassBtn">Reset Password</span>
+          </button>
 
           <!-- Language Toggle -->
           <button onclick="toggleLanguage()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition" title="Switch Language / تغيير اللغة">
@@ -234,7 +380,7 @@
     <!-- Main Content Container -->
     <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-      <!-- KPI Summary Ribbon -->
+      <!-- KPI Summary Ribbon (No Calibration Due — Focused on Operational, Contingency/Fault & Not Available) -->
       <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
@@ -261,7 +407,7 @@
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
             <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="kpiOperational">Operational</p>
-            <p id="kpi-operational" class="text-2xl font-extrabold text-emerald-600 mt-1">47</p>
+            <p id="kpi-operational" class="text-2xl font-extrabold text-emerald-600 mt-1">48</p>
             <p class="text-[11px] text-emerald-600 font-semibold mt-0.5" data-i18n="kpiReadyForLab">Ready for Clinical Skills</p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -271,23 +417,23 @@
 
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="kpiMaintenance">Maintenance / Calib.</p>
-            <p id="kpi-maint" class="text-2xl font-extrabold text-amber-600 mt-1">2</p>
-            <p class="text-[11px] text-amber-600 font-semibold mt-0.5" data-i18n="kpiScheduledPM">Scheduled PM / Check</p>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="kpiContingency">Contingency / Fault</p>
+            <p id="kpi-fault" class="text-2xl font-extrabold text-amber-600 mt-1">1</p>
+            <p class="text-[11px] text-amber-600 font-semibold mt-0.5" data-i18n="kpiActiveBackup">Backup Unit Assigned</p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <i data-lucide="wrench" class="w-5 h-5"></i>
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
           </div>
         </div>
 
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="kpiContingency">Contingency / Fault</p>
-            <p id="kpi-fault" class="text-2xl font-extrabold text-rose-600 mt-1">1</p>
-            <p class="text-[11px] text-rose-600 font-semibold mt-0.5" data-i18n="kpiActiveBackup">Backup Unit Assigned</p>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400" data-i18n="kpiNotAvailable">Not Available</p>
+            <p id="kpi-unavailable" class="text-2xl font-extrabold text-rose-600 mt-1">1</p>
+            <p class="text-[11px] text-rose-600 font-semibold mt-0.5" data-i18n="kpiOutService">Can Reset to Operational</p>
           </div>
           <div class="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
-            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <i data-lucide="x-circle" class="w-5 h-5"></i>
           </div>
         </div>
 
@@ -318,9 +464,9 @@
         <div id="lab-Zero-cards" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
       </section>
 
-      <!-- Navigation Tabs & Primary Action Bar -->
+      <!-- Navigation Tabs (Including Dedicated "Create User" Tab) & Primary Action Bar -->
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="inline-flex p-1.5 rounded-2xl bg-slate-200/80 border border-slate-300/60">
+        <div class="inline-flex flex-wrap p-1.5 rounded-2xl bg-slate-200/80 border border-slate-300/60 gap-1">
           <button onclick="switchMainTab('inventory')" id="tab-btn-inventory" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition bg-white text-ksau-800 shadow-sm">
             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
             <span data-i18n="tabInventory">Medical Equipment Inventory</span>
@@ -328,17 +474,27 @@
           </button>
           <button onclick="switchMainTab('contingency')" id="tab-btn-contingency" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition text-slate-600 hover:text-slate-900">
             <i data-lucide="shield-alert" class="w-4 h-4"></i>
-            <span data-i18n="tabContingency">Contingency & Maintenance Log</span>
-            <span id="badge-tab-log" class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800">3</span>
+            <span data-i18n="tabContingency">Contingency Log</span>
+            <span id="badge-tab-log" class="px-1.5 py-0.5 text-[10px] rounded-full bg-amber-100 text-amber-800">2</span>
+          </button>
+          <button onclick="switchMainTab('createuser')" id="tab-btn-createuser" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition text-slate-600 hover:text-slate-900">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span data-i18n="tabCreateUser">Create User</span>
           </button>
           <button onclick="switchMainTab('staff')" id="tab-btn-staff" class="px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition text-slate-600 hover:text-slate-900">
             <i data-lucide="users" class="w-4 h-4"></i>
-            <span data-i18n="tabStaff">Staff Credentials & Permissions</span>
+            <span data-i18n="tabStaff">Authorized Staff Credentials & Access Control</span>
             <span id="badge-tab-staff" class="px-1.5 py-0.5 text-[10px] rounded-full bg-slate-300 text-slate-800">1</span>
           </button>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <!-- Reset All Non-Operational Equipment Statuses Button -->
+          <button id="btn-reset-all-status" onclick="resetAllEquipmentStatuses()" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="rotate-ccw" class="w-4 h-4 text-emerald-600"></i>
+            <span data-i18n="resetAllStatusBtn">Reset All Statuses to Operational</span>
+          </button>
+
           <!-- Expand/Collapse All Subcomponents -->
           <button onclick="toggleExpandAllSubs()" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
             <i data-lucide="chevrons-up-down" class="w-4 h-4 text-indigo-600"></i>
@@ -353,7 +509,7 @@
         </div>
       </div>
 
-      <!-- ================= TAB 1: EQUIPMENT INVENTORY VIEW ================= -->
+      <!-- ================= TAB 1: EQUIPMENT INVENTORY VIEW (NO SERIAL NUMBER COLUMN) ================= -->
       <section id="view-inventory" class="space-y-4">
         <!-- Search & Filter Bar -->
         <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -362,16 +518,15 @@
             <input type="text" id="search-input" oninput="renderInventory()"
               class="w-full pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white"
               data-i18n-placeholder="searchPlaceholder"
-              placeholder="Search by Description, HTMS #, KU #, Model, Serial #, or Sub-component..." />
+              placeholder="Search by Description, HTMS #, KU #, Model, Manufacturer, or Sub-component..." />
           </div>
 
           <div>
             <select id="filter-status" onchange="renderInventory()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-ksau-600">
               <option value="ALL" data-i18n="allStatuses">All Operational Statuses</option>
               <option value="Operational" data-i18n="statusOperational">Operational</option>
-              <option value="Maintenance" data-i18n="statusMaintenance">Under Maintenance</option>
-              <option value="Calibration Due" data-i18n="statusCalibration">Calibration Due</option>
               <option value="Contingency / Fault" data-i18n="statusFault">Contingency / Fault</option>
+              <option value="Not Available" data-i18n="statusNotAvailable">Not Available</option>
             </select>
           </div>
 
@@ -383,13 +538,13 @@
 
           <div class="flex items-center gap-2">
             <button onclick="resetFilters()" class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-              <span data-i18n="resetFiltersBtn">Reset Filters</span>
+              <i data-lucide="filter-x" class="w-3.5 h-3.5"></i>
+              <span data-i18n="resetFiltersBtn">Clear Search Filters</span>
             </button>
           </div>
         </div>
 
-        <!-- Equipment Table Card -->
+        <!-- Equipment Table Card (Serial No. Removed) -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-left rtl:text-right border-collapse">
@@ -401,7 +556,6 @@
                   <th class="py-3.5 px-4" data-i18n="thKuNo">KU No.</th>
                   <th class="py-3.5 px-4" data-i18n="thModel">Model</th>
                   <th class="py-3.5 px-4" data-i18n="thManufacturer">Manufacturer</th>
-                  <th class="py-3.5 px-4" data-i18n="thSerial">Serial No.</th>
                   <th class="py-3.5 px-4" data-i18n="thStatus">Status</th>
                   <th class="py-3.5 px-4 text-right rtl:text-left" data-i18n="thActions">Actions</th>
                 </tr>
@@ -412,7 +566,7 @@
         </div>
       </section>
 
-      <!-- ================= TAB 2: CONTINGENCY & MAINTENANCE LOGBOOK ================= -->
+      <!-- ================= TAB 2: CONTINGENCY LOGBOOK ================= -->
       <section id="view-contingency" class="hidden space-y-4">
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3.5">
@@ -420,20 +574,110 @@
               <i data-lucide="clipboard-check" class="w-6 h-6"></i>
             </div>
             <div>
-              <h2 class="text-base font-extrabold text-slate-900" data-i18n="logbookHeading">HTMS Contingency & Corrective Maintenance Logbook</h2>
-              <p class="text-xs text-slate-500" data-i18n="logbookSub">Official record of equipment faults, backup unit allocations, calibration checks, and engineer sign-offs</p>
+              <h2 class="text-base font-extrabold text-slate-900" data-i18n="logbookHeading">Respiratory Therapy Lab Contingency Logbook</h2>
+              <p class="text-xs text-slate-500" data-i18n="logbookSub">Official record of equipment faults, unavailable devices, backup unit allocations, and status resets</p>
             </div>
           </div>
-          <button id="btn-new-contingency" onclick="openContingencyModal()" class="px-4 py-2.5 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold flex items-center gap-2 shadow-md transition">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span data-i18n="logNewIssueBtn">+ Log New Contingency Issue</span>
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="resetAllEquipmentStatuses()" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5 transition">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+              <span data-i18n="resetAllStatusBtn">Reset All Statuses to Operational</span>
+            </button>
+            <button id="btn-new-contingency" onclick="openContingencyModal()" class="px-4 py-2.5 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold flex items-center gap-2 shadow-md transition">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span data-i18n="logNewIssueBtn">+ Log Contingency Issue</span>
+            </button>
+          </div>
         </div>
 
         <div id="contingency-list" class="space-y-3"></div>
       </section>
 
-      <!-- ================= TAB 3: STAFF CREDENTIALS & PERMISSIONS (RBAC) ================= -->
+      <!-- ================= TAB 3: DEDICATED "CREATE USER" PAGE IN MAIN PORTAL ================= -->
+      <section id="view-createuser" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm max-w-3xl mx-auto">
+          <div class="flex items-center gap-3.5 pb-4 border-b border-slate-100 mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-ksau-50 border border-ksau-200 text-ksau-700 flex items-center justify-center">
+              <i data-lucide="user-plus" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 class="text-base font-extrabold text-slate-900" data-i18n="createUserPageHeading">Create New Staff Account & Assign Permissions</h2>
+              <p class="text-xs text-slate-500" data-i18n="createUserPageSub">Provision login credentials for Respiratory Therapy faculty, specialists, or lab staff</p>
+            </div>
+          </div>
+
+          <div id="create-user-locked-notice" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold mb-4">
+            Your current account does not have permission to create or manage staff credentials. Please contact Abdulrahman Mufti, RT Specialist.
+          </div>
+
+          <form id="page-create-user-form" onsubmit="saveStaffFromPage(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Full Name *</label>
+                <input type="text" id="page-staff-name" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="e.g. Khalid Al-Harbi" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Role / Title *</label>
+                <input type="text" id="page-staff-role" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="e.g. RT Specialist / Lab Instructor" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Email Address *</label>
+                <input type="email" id="page-staff-email" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="username@ksau-hs.edu.sa" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Phone / Extension</label>
+                <input type="text" id="page-staff-phone" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="0114299999 ext. -----" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Login Username *</label>
+                <input type="text" id="page-staff-user" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="e.g. kalharbi" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Initial Login Password *</label>
+                <input type="text" id="page-staff-pass" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-ksau-600 focus:bg-white" placeholder="Set strong password" />
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+              <p class="text-[11px] font-extrabold uppercase text-slate-700">Portal Access & Editing Permissions</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <label class="flex items-center gap-2.5 text-xs font-medium text-slate-700 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200">
+                  <input type="checkbox" id="page-perm-edit-eq" checked class="rounded text-ksau-600 focus:ring-ksau-600" />
+                  <span>Can Add & Edit Medical Equipment</span>
+                </label>
+                <label class="flex items-center gap-2.5 text-xs font-medium text-slate-700 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200">
+                  <input type="checkbox" id="page-perm-log" checked class="rounded text-ksau-600 focus:ring-ksau-600" />
+                  <span>Can Log Contingency & Reset Status</span>
+                </label>
+                <label class="flex items-center gap-2.5 text-xs font-medium text-slate-700 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200">
+                  <input type="checkbox" id="page-perm-labs" class="rounded text-ksau-600 focus:ring-ksau-600" />
+                  <span>Can Create & Manage Laboratories</span>
+                </label>
+                <label class="flex items-center gap-2.5 text-xs font-medium text-slate-700 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200">
+                  <input type="checkbox" id="page-perm-users" class="rounded text-ksau-600 focus:ring-ksau-600" />
+                  <span>Can Create & Manage Staff Accounts</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="pt-3 flex items-center justify-end gap-3">
+              <button type="reset" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Clear Form</button>
+              <button type="submit" id="page-create-user-submit" class="px-6 py-2.5 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-extrabold shadow-md flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <span>Create Staff Account & Sync</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: AUTHORIZED STAFF CREDENTIALS & ACCESS CONTROL ================= -->
       <section id="view-staff" class="hidden space-y-4">
         <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3.5">
@@ -442,55 +686,59 @@
             </div>
             <div>
               <h2 class="text-base font-extrabold text-slate-900" data-i18n="staffHeading">Authorized Staff Credentials & Access Control</h2>
-              <p class="text-xs text-slate-500" data-i18n="staffSub">Create accounts for engineers, lab coordinators, or auditors and configure editing/adding permissions</p>
+              <p class="text-xs text-slate-500" data-i18n="staffSub">Manage staff accounts, reset passwords, and configure permissions (Abdulrahman Mufti's master profile is editable only by him)</p>
             </div>
           </div>
-          <button id="btn-create-staff" onclick="openStaffModal()" class="px-4 py-2.5 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold flex items-center gap-2 shadow-md transition">
-            <i data-lucide="user-plus" class="w-4 h-4"></i>
-            <span data-i18n="createStaffBtn">+ Create Staff Account</span>
-          </button>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="openPasswordResetModal()" class="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-extrabold flex items-center gap-2 transition">
+              <i data-lucide="key-round" class="w-4 h-4 text-amber-700"></i>
+              <span>Reset My Password</span>
+            </button>
+            <button id="btn-create-staff" onclick="switchMainTab('createuser')" class="px-4 py-2.5 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold flex items-center gap-2 shadow-md transition">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span data-i18n="createStaffBtn">+ Create New User</span>
+            </button>
+          </div>
         </div>
 
         <div id="staff-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
-      <!-- Official KSAU-HS Footer Sign-off Card -->
+      <!-- Official KSAU-HS Footer Sign-off Card (END-USER / LAB VERIFICATION Box Removed + Updated Contact Info) -->
       <footer class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm mt-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-center">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center">
           <div class="flex items-center gap-3.5">
             <div class="w-14 h-14 rounded-full bg-white p-0.5 border border-slate-200 shrink-0">
               <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
             </div>
             <div>
               <p class="font-arabic text-xs font-bold text-ksau-700">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-              <p class="text-xs font-extrabold text-slate-900">KSAU-HS HTMS DEPARTMENT</p>
-              <p class="text-[11px] text-slate-500">Central Region • Riyadh, Kingdom of Saudi Arabia</p>
+              <p class="text-xs font-extrabold text-slate-900">KSAU-HS • RESPIRATORY THERAPY SKILLS LABS</p>
+              <p class="text-[11px] text-slate-500">College of Applied Medical Sciences (Male) • Central Region • Riyadh</p>
             </div>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
-            <p class="text-[10px] font-extrabold uppercase tracking-wider text-ksau-700" data-i18n="endUserVerification">END-USER / LAB VERIFICATION</p>
-            <p class="text-xs font-bold text-slate-900 mt-0.5">Respiratory Therapy Skills Lab</p>
-            <p class="text-[11px] text-slate-600">College of Applied Medical Sciences - Male</p>
-            <p class="text-[11px] text-slate-500 font-mono mt-0.5">Labs CM-01-158 & CM-01-162 Verified</p>
-          </div>
-
-          <div class="p-3.5 rounded-xl bg-ksau-50/70 border border-ksau-200/80">
-            <p class="text-[10px] font-extrabold uppercase tracking-wider text-ksau-700" data-i18n="htmsEngineerSignoff">HTMS ENGINEER SIGN-OFF</p>
-            <p class="text-xs font-bold text-slate-900 mt-0.5">Eng. Obaid Shaya Al Jarwi</p>
-            <p class="text-[11px] text-slate-700 font-mono">Badge No.: 68459 • Date: 01/05/2023</p>
-            <p class="text-[11px] text-ksau-700 font-medium mt-0.5">htms-ta-cr@ksau-hs.edu.sa</p>
+          <div class="p-4 rounded-xl bg-ksau-50/70 border border-ksau-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-ksau-700" data-i18n="rtSpecialistSignoff">RT SPECIALIST SIGN-OFF & LAB SUPERVISOR</p>
+              <p class="text-sm font-extrabold text-slate-900 mt-0.5">Abdulrahman Mufti, RT Specialist</p>
+              <p class="text-[11px] text-slate-600 font-medium">Respiratory Therapy Skills Labs (CM-01-158 & CM-01-162)</p>
+            </div>
+            <div class="text-left sm:text-right rtl:text-left font-mono text-[11px] text-ksau-800 space-y-0.5">
+              <p class="font-bold">muftiab@ksau-hs.edu.sa</p>
+              <p>Phone: 0114299999 ext. 98317</p>
+            </div>
           </div>
         </div>
-        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
-          <span>Regional HTMS Support: <strong class="text-slate-600">htms-ta-cr@ksau-hs.edu.sa</strong> (Central) • <strong class="text-slate-600">htms-ta-er@ksau-hs.edu.sa</strong> (Eastern) • <strong class="text-slate-600">htms-ta-wr@ksau-hs.edu.sa</strong> (Western)</span>
+        <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+          <span>Contact & Support: <strong class="text-slate-800 font-mono">muftiab@ksau-hs.edu.sa</strong> • <strong class="text-slate-800 font-mono">Phone: 0114299999 ext. 98317</strong></span>
           <button onclick="triggerLogoUpload()" class="text-ksau-600 hover:underline font-semibold">Update Official Logo Image</button>
         </div>
       </footer>
     </main>
   </div>
 
-  <!-- ================= MODAL 1: OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR ================= -->
+  <!-- ================= MODAL 1: OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR (INCLUDES CONTINGENCY LOG) ================= -->
   <div id="report-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
     <div class="bg-slate-100 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[94vh] flex flex-col overflow-hidden border border-white/20">
       <!-- Top Control Bar -->
@@ -498,8 +746,8 @@
         <div class="flex items-center gap-3">
           <i data-lucide="file-check-2" class="w-5 h-5 text-ksau-goldbright"></i>
           <div>
-            <h3 class="text-sm font-extrabold" data-i18n="reportModalTitle">Official KSAU-HS HTMS Inventory & Contingency Report</h3>
-            <p class="text-[11px] text-emerald-200" data-i18n="reportModalSub">Formatted A4 Official University Document — Download directly as PDF or Print</p>
+            <h3 class="text-sm font-extrabold" data-i18n="reportModalTitle">Official KSAU-HS Inventory & Contingency Report</h3>
+            <p class="text-[11px] text-emerald-200" data-i18n="reportModalSub">Includes Complete Equipment Inventory & Contingency Logbook — Download PDF or Print</p>
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -522,14 +770,14 @@
 
       <!-- Printable A4 Document Sheet -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scroll">
-        <div id="printable-report-area" class="bg-white text-slate-900 mx-auto max-w-[1000px] p-8 rounded-xl shadow-md border border-slate-200">
+        <div id="printable-report-area" class="bg-white text-slate-900 mx-auto max-w-[1040px] p-8 rounded-xl shadow-md border border-slate-200">
           <!-- Official University Letterhead -->
           <div class="border-b-2 border-ksau-700 pb-4 mb-5 flex items-center justify-between gap-4">
             <div class="text-xs space-y-0.5">
               <p class="font-extrabold text-slate-900 uppercase">Kingdom of Saudi Arabia</p>
               <p class="font-bold text-ksau-700">King Saud bin Abdulaziz University for Health Sciences</p>
-              <p class="font-semibold text-slate-700">Healthcare Technology Management Services (HTMS)</p>
-              <p class="text-slate-500">Central Region • College of Applied Medical Sciences - Male</p>
+              <p class="font-semibold text-slate-700">College of Applied Medical Sciences - Male • Central Region</p>
+              <p class="text-slate-500">Respiratory Therapy Skills Laboratories</p>
             </div>
             <div class="w-20 h-20 shrink-0">
               <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
@@ -537,48 +785,51 @@
             <div class="text-right font-arabic text-xs space-y-0.5" dir="rtl">
               <p class="font-extrabold text-slate-900">المملكة العربية السعودية</p>
               <p class="font-bold text-ksau-700">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-              <p class="font-semibold text-slate-700">إدارة خدمات تكنولوجيا الرعاية الصحية (HTMS)</p>
-              <p class="text-slate-500">المنطقة الوسطى • كلية العلوم الطبية التطبيقية - طلاب</p>
+              <p class="font-semibold text-slate-700">كلية العلوم الطبية التطبيقية - طلاب • المنطقة الوسطى</p>
+              <p class="text-slate-500">معامل مهارات العلاج التنفسي</p>
             </div>
           </div>
 
           <div class="text-center mb-5">
             <h2 class="text-base font-extrabold uppercase tracking-wide text-ksau-800 bg-ksau-50 py-2 px-4 rounded-lg border border-ksau-200 inline-block">
-              INVENTORY OF MEDICAL EQUIPMENT AT KSAU-HS — RESPIRATORY THERAPY SKILLS LAB
+              INVENTORY OF MEDICAL EQUIPMENT & CONTINGENCY LOG — RESPIRATORY THERAPY SKILLS LAB
             </h2>
             <p id="report-lab-meta" class="text-xs font-bold text-slate-600 mt-1.5">Labs: CM-01-158 & CM-01-162 • Total Verified Systems: 50</p>
           </div>
 
-          <!-- Dynamic Report Table -->
-          <div id="report-table-container" class="overflow-x-auto"></div>
+          <!-- Section 1: Dynamic Equipment Report Table (Without Serial No.) -->
+          <div class="mb-6">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-ksau-800 mb-2">1. Medical Equipment Inventory</h3>
+            <div id="report-table-container" class="overflow-x-auto"></div>
+          </div>
 
-          <!-- Official Signature Blocks (Exact match to PDF Page 3) -->
-          <div class="mt-8 pt-4 border-t-2 border-slate-300 grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
-            <div class="border border-slate-300 rounded-lg p-4 bg-slate-50/50">
-              <p class="font-extrabold uppercase text-ksau-800 border-b border-slate-200 pb-1.5 mb-2">End-User Verification</p>
-              <p class="py-1"><strong>Name:</strong> Respiratory Therapy Skills Lab Coordinator</p>
-              <p class="py-1"><strong>College:</strong> Applied Medical Sciences - Male</p>
-              <p class="py-1"><strong>Date:</strong> ____ / ____ / 2026</p>
-              <p class="py-1 mt-2"><strong>Signature:</strong> ___________________________</p>
-            </div>
-            <div class="border border-ksau-300 rounded-lg p-4 bg-ksau-50/40">
-              <p class="font-extrabold uppercase text-ksau-800 border-b border-ksau-200 pb-1.5 mb-2">HTMS Engineer Verification</p>
-              <p class="py-1"><strong>Name:</strong> Eng. Obaid Shaya Al Jarwi</p>
-              <p class="py-1"><strong>Badge No.:</strong> 68459</p>
-              <p class="py-1"><strong>Date:</strong> 01/05/2023</p>
-              <p class="py-1 mt-2"><strong>Signature:</strong> <span class="italic font-serif text-ksau-800 font-bold">Digitally Verified — HTMS/2023</span></p>
+          <!-- Section 2: Contingency Log Table Included in Official Report -->
+          <div class="mb-6">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">2. Contingency & Equipment Fault Logbook</h3>
+            <div id="report-contingency-container" class="overflow-x-auto"></div>
+          </div>
+
+          <!-- Official Signature Block (END-USER Verification Removed; Abdulrahman Mufti Sign-Off Only) -->
+          <div class="mt-8 pt-4 border-t-2 border-slate-300 flex justify-end text-xs">
+            <div class="border border-ksau-300 rounded-lg p-4 bg-ksau-50/40 w-full sm:w-96">
+              <p class="font-extrabold uppercase text-ksau-800 border-b border-ksau-200 pb-1.5 mb-2">RT Specialist Verification & Sign-Off</p>
+              <p class="py-0.5"><strong>Name:</strong> Abdulrahman Mufti</p>
+              <p class="py-0.5"><strong>Title:</strong> RT Specialist</p>
+              <p class="py-0.5"><strong>Email:</strong> muftiab@ksau-hs.edu.sa</p>
+              <p class="py-0.5"><strong>Phone:</strong> 0114299999 ext. 98317</p>
+              <p class="py-0.5 mt-2"><strong>Signature:</strong> <span class="italic font-serif text-ksau-800 font-bold">Abdulrahman Mufti — Verified</span></p>
             </div>
           </div>
 
-          <p class="mt-4 text-[10px] text-center text-slate-500">
-            Note: For any concern, kindly coordinate with HTMS Dept. thru email address: <strong>htms-ta-cr@ksau-hs.edu.sa</strong> for Central Region; <strong>htms-ta-er@ksau-hs.edu.sa</strong> for Eastern Region and <strong>htms-ta-wr@ksau-hs.edu.sa</strong> for Western Region.
+          <p class="mt-4 text-[10px] text-center text-slate-600 font-medium">
+            Contact & Support: <strong>muftiab@ksau-hs.edu.sa</strong> • <strong>Phone: 0114299999 ext. 98317</strong>
           </p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ================= MODAL 2: QR CODE MOBILE & DESKTOP ACCESS ================= -->
+  <!-- ================= MODAL 2: QR CODE MOBILE & DESKTOP ACCESS (ONLY QR CODE, NO ENCODED URL INPUT) ================= -->
   <div id="qr-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-fade-up">
       <div class="bg-ksau-800 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
@@ -596,18 +847,11 @@
             <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
           </div>
           <p class="font-arabic text-xs font-bold text-ksau-800">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-          <h4 class="text-xs font-extrabold text-slate-900 uppercase mt-0.5">KSAU-HS HTMS Lab Inventory</h4>
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase mt-0.5">KSAU-HS RT Lab Inventory</h4>
           <p class="text-[11px] text-ksau-700 font-semibold">Labs CM-01-158 & CM-01-162 • CAMS-Male</p>
           <div id="qrcode-box" class="my-4 flex justify-center bg-white p-3 rounded-xl border border-slate-200 inline-block mx-auto"></div>
           <p class="text-[11px] text-slate-500 font-medium" data-i18n="scanQrPrompt">Scan with any smartphone or tablet camera to open the live inventory & contingency log</p>
-        </div>
-
-        <div class="text-left rtl:text-right">
-          <label class="block text-[11px] font-bold uppercase text-slate-500 mb-1" data-i18n="qrUrlLabel">Portal URL Encoded in QR</label>
-          <div class="flex gap-2">
-            <input type="text" id="qr-url-input" oninput="regenerateQrCode()" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" />
-            <button onclick="copyQrUrl()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">Copy</button>
-          </div>
+          <p class="text-[10px] text-slate-500 mt-1 font-mono">muftiab@ksau-hs.edu.sa • 0114299999 ext. 98317</p>
         </div>
 
         <button onclick="downloadQrDoorCard()" class="w-full py-2.5 bg-ksau-600 hover:bg-ksau-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow">
@@ -618,7 +862,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 3: ADD / EDIT MEDICAL EQUIPMENT ================= -->
+  <!-- ================= MODAL 3: ADD / EDIT MEDICAL EQUIPMENT (NO SERIAL NO., NO CALIBRATION DUE) ================= -->
   <div id="equipment-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-200 my-auto animate-fade-up">
       <div class="bg-ksau-800 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
@@ -646,9 +890,8 @@
             <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Operational Status *</label>
             <select id="eq-status" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold">
               <option value="Operational">Operational</option>
-              <option value="Maintenance">Under Maintenance</option>
-              <option value="Calibration Due">Calibration Due</option>
               <option value="Contingency / Fault">Contingency / Fault</option>
+              <option value="Not Available">Not Available</option>
             </select>
           </div>
         </div>
@@ -658,7 +901,7 @@
           <input type="text" id="eq-desc" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" placeholder="e.g. Ventilators" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">HTMS No. *</label>
             <input type="text" id="eq-htms" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="111315" />
@@ -671,10 +914,6 @@
             <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Model *</label>
             <input type="text" id="eq-model" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" placeholder="Covidien 840+" />
           </div>
-          <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Serial No. *</label>
-            <input type="text" id="eq-serial" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="3512130579" />
-          </div>
         </div>
 
         <div>
@@ -682,7 +921,7 @@
           <input type="text" id="eq-mfg" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" placeholder="Puritan Bennett" />
         </div>
 
-        <!-- Sub-Components Builder -->
+        <!-- Sub-Components Builder (Without Serial No.) -->
         <div class="pt-3 border-t border-slate-200">
           <div class="flex items-center justify-between mb-2">
             <label class="text-xs font-extrabold text-slate-700">Attached Sub-Components (Simpads, Racks, Modules, Syringes)</label>
@@ -699,13 +938,13 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 4: LOG CONTINGENCY / MAINTENANCE ISSUE ================= -->
+  <!-- ================= MODAL 4: LOG CONTINGENCY ISSUE ================= -->
   <div id="contingency-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200 animate-fade-up">
       <div class="bg-ksau-800 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
         <div class="flex items-center gap-2.5">
           <i data-lucide="alert-octagon" class="w-5 h-5 text-ksau-goldbright"></i>
-          <h3 class="text-sm font-extrabold">Log Contingency / Maintenance Action</h3>
+          <h3 class="text-sm font-extrabold">Log Equipment Contingency / Status Change</h3>
         </div>
         <button onclick="closeContingencyModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
           <i data-lucide="x" class="w-4 h-4"></i>
@@ -720,14 +959,13 @@
           <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Updated Device Status *</label>
           <select id="log-new-status" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold">
             <option value="Contingency / Fault">Contingency / Fault (Backup Activated)</option>
-            <option value="Maintenance">Under Maintenance</option>
-            <option value="Calibration Due">Calibration Due</option>
+            <option value="Not Available">Not Available (Out of Service)</option>
             <option value="Operational">Resolved — Operational</option>
           </select>
         </div>
         <div>
-          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Fault / Inspection Observation *</label>
-          <textarea id="log-issue" required rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" placeholder="Describe fault, sensor calibration alert, or preventive inspection finding..."></textarea>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Fault / Issue Observation *</label>
+          <textarea id="log-issue" required rows="2" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs" placeholder="Describe fault or reason device is unavailable..."></textarea>
         </div>
         <div>
           <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Contingency Action Plan / Backup Unit Assigned *</label>
@@ -774,67 +1012,112 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 6: CREATE STAFF ACCOUNT & PERMISSIONS ================= -->
-  <div id="staff-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+  <!-- ================= MODAL 6: PASSWORD RESET MODAL (MAIN PORTAL & STAFF CARDS) ================= -->
+  <div id="password-reset-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-fade-up">
       <div class="bg-ksau-800 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
         <div class="flex items-center gap-2.5">
-          <i data-lucide="user-plus" class="w-5 h-5 text-ksau-goldbright"></i>
-          <h3 class="text-sm font-extrabold">Create Staff Account & Permissions</h3>
+          <i data-lucide="key-round" class="w-5 h-5 text-ksau-goldbright"></i>
+          <h3 id="pw-modal-title" class="text-sm font-extrabold">Reset Account Password</h3>
         </div>
-        <button onclick="closeStaffModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
+        <button onclick="closePasswordResetModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
-      <form onsubmit="saveStaffAccount(event)" class="p-6 space-y-4">
+      <form id="password-reset-form" onsubmit="handlePasswordResetSubmit(event)" class="p-6 space-y-4">
+        <input type="hidden" id="pw-target-username" />
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+          <span class="text-slate-500">Target Account:</span>
+          <strong id="pw-target-display" class="text-slate-900 ml-1">Abdulrahman Mufti (amufti)</strong>
+        </div>
+
+        <div id="pw-current-wrap">
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Current Password *</label>
+          <input type="password" id="pw-current-input" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="Enter current password" />
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">New Password *</label>
+          <input type="text" id="pw-new-input" required class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="Enter new password" />
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Confirm New Password *</label>
+          <input type="text" id="pw-confirm-input" required class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="Confirm new password" />
+        </div>
+
+        <div id="pw-error-box" class="hidden p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold"></div>
+
+        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closePasswordResetModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 7: EDIT STAFF PROFILE & PERMISSIONS MODAL ================= -->
+  <div id="edit-staff-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-fade-up">
+      <div class="bg-ksau-800 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="user-cog" class="w-5 h-5 text-ksau-goldbright"></i>
+          <h3 class="text-sm font-extrabold">Edit Staff Profile & Permissions</h3>
+        </div>
+        <button onclick="closeEditStaffModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form onsubmit="saveEditedStaffProfile(event)" class="p-6 space-y-4">
+        <input type="hidden" id="edit-staff-orig-user" />
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Full Name *</label>
-            <input type="text" id="staff-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" placeholder="Eng. Khalid Al-Harbi" />
+            <input type="text" id="edit-staff-name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" />
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Badge No. *</label>
-            <input type="text" id="staff-badge" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="71204" />
+            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Role / Title *</label>
+            <input type="text" id="edit-staff-role" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Login Username *</label>
-            <input type="text" id="staff-user" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="kalharbi" />
+            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Email *</label>
+            <input type="email" id="edit-staff-email" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" />
           </div>
           <div>
-            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Login Password *</label>
-            <input type="text" id="staff-pass" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" placeholder="Set password" />
+            <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Phone / Ext</label>
+            <input type="text" id="edit-staff-phone" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" />
           </div>
         </div>
         <div>
-          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Title / Role Label *</label>
-          <input type="text" id="staff-role" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold" placeholder="Biomedical Engineer / Lab Coordinator" />
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Login Username *</label>
+          <input type="text" id="edit-staff-user" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono" />
         </div>
 
-        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+        <div id="edit-staff-perms-box" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
           <p class="text-[11px] font-extrabold uppercase text-slate-700">Access & Editing Permissions</p>
           <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-            <input type="checkbox" id="perm-edit-eq" checked class="rounded text-ksau-600 focus:ring-ksau-600" />
+            <input type="checkbox" id="edit-perm-eq" class="rounded text-ksau-600" />
             <span>Can Add & Edit Medical Equipment</span>
           </label>
           <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-            <input type="checkbox" id="perm-log" checked class="rounded text-ksau-600 focus:ring-ksau-600" />
-            <span>Can Log Contingency & Maintenance Issues</span>
+            <input type="checkbox" id="edit-perm-log" class="rounded text-ksau-600" />
+            <span>Can Log Contingency & Reset Status</span>
           </label>
           <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-            <input type="checkbox" id="perm-labs" class="rounded text-ksau-600 focus:ring-ksau-600" />
+            <input type="checkbox" id="edit-perm-labs" class="rounded text-ksau-600" />
             <span>Can Create & Manage Laboratories</span>
           </label>
           <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
-            <input type="checkbox" id="perm-users" class="rounded text-ksau-600 focus:ring-ksau-600" />
+            <input type="checkbox" id="edit-perm-users" class="rounded text-ksau-600" />
             <span>Can Create & Manage Staff Credentials</span>
           </label>
         </div>
 
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
-          <button type="button" onclick="closeStaffModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save Staff Credentials</button>
+          <button type="button" onclick="closeEditStaffModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save Changes</button>
         </div>
       </form>
     </div>
@@ -859,19 +1142,14 @@
           <path id="ksauTopArc" d="M 27,120 A 93,93 0 1,1 213,120" fill="none"/>
           <path id="ksauBotArc" d="M 22,124 A 98,98 0 0,0 218,124" fill="none"/>
         </defs>
-        <!-- Outer Green Seal Ring -->
         <circle cx="120" cy="120" r="118" fill="#0f6838" stroke="#9e7b2f" stroke-width="3.5"/>
-        <!-- Inner Cream Field -->
         <circle cx="120" cy="120" r="80" fill="#fcf6c5" stroke="#9e7b2f" stroke-width="3"/>
-        <!-- Curved Arabic University Name -->
         <text fill="#fcf6c5" font-family="'Noto Kufi Arabic', sans-serif" font-size="11.5" font-weight="700" text-anchor="middle">
           <textPath href="#ksauTopArc" startOffset="50%">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</textPath>
         </text>
-        <!-- Curved English University Name -->
         <text fill="#fcf6c5" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.7" font-weight="800" letter-spacing="0.15" text-anchor="middle">
           <textPath href="#ksauBotArc" startOffset="50%">King Saud bin Abdulaziz University for Health Sciences</textPath>
         </text>
-        <!-- Golden 3-Lobed Trefoil Arch -->
         <path d="M 120,46
                  C 138,65 143,88 139,109
                  C 162,118 176,136 181,160
@@ -880,13 +1158,11 @@
                  C 64,136 78,118 101,109
                  C 97,88 102,65 120,46 Z"
               fill="none" stroke="#9e7b2f" stroke-width="8.5" stroke-linejoin="round" stroke-linecap="round"/>
-        <!-- Top Lobe: Saudi Palm & Crossed Swords -->
         <g transform="translate(120, 79)">
           <line x1="0" y1="7" x2="0" y2="-6" stroke="#0f6838" stroke-width="2.2" stroke-linecap="round"/>
           <path d="M0,-6 C-5,-10 -10,-8 -12,-4 M0,-6 C5,-10 10,-8 12,-4 M0,-7 C-4,-13 -8,-13 -10,-10 M0,-7 C4,-13 8,-13 10,-10 M0,-8 L0,-14" stroke="#0f6838" stroke-width="1.8" fill="none" stroke-linecap="round"/>
           <path d="M-14,10 Q0,3 14,12 M14,10 Q0,3 -14,12" stroke="#0f6838" stroke-width="1.8" fill="none" stroke-linecap="round"/>
         </g>
-        <!-- Center: Open Book -->
         <g transform="translate(120, 121)">
           <path d="M-16,-10 L-2,-8 L-2,10 L-16,8 Z M16,-10 L2,-8 L2,10 L16,8 Z" fill="#fcf6c5" stroke="#1e293b" stroke-width="2" stroke-linejoin="round"/>
           <line x1="0" y1="-8" x2="0" y2="11" stroke="#1e293b" stroke-width="2"/>
@@ -895,13 +1171,11 @@
           <line x1="5" y1="-3" x2="12" y2="-4" stroke="#1e293b" stroke-width="1.2"/>
           <line x1="5" y1="2" x2="12" y2="1" stroke="#1e293b" stroke-width="1.2"/>
         </g>
-        <!-- Bottom-Left Lobe: Stethoscope -->
         <g transform="translate(86, 144)">
           <path d="M-6,-10 C-6,-2 4,-2 4,-10" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
           <path d="M-1,-4 L-4,6 C-6,11 -13,10 -12,4 C-11,-1 -4,1 -1,6 C2,10 8,8 9,3" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/>
           <circle cx="10" cy="1" r="2.8" fill="#fcf6c5" stroke="#1e293b" stroke-width="2"/>
         </g>
-        <!-- Bottom-Right Lobe: DNA Double Helix -->
         <g transform="translate(154, 144) rotate(-32)">
           <path d="M-12,-4 Q-6,5 0,-4 T12,-4" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/>
           <path d="M-12,4 Q-6,-5 0,4 T12,4" fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/>
@@ -909,129 +1183,125 @@
           <line x1="0" y1="-3" x2="0" y2="3" stroke="#1e293b" stroke-width="1.5"/>
           <line x1="8" y1="-2" x2="8" y2="2" stroke="#1e293b" stroke-width="1.5"/>
         </g>
-        <!-- Founding Years: 2005 & ١٤٢٦ -->
         <text x="92" y="185" fill="#1e293b" font-family="sans-serif" font-size="11" font-weight="800" text-anchor="middle" transform="rotate(18, 92, 185)">2005</text>
         <text x="148" y="185" fill="#1e293b" font-family="sans-serif" font-size="11.5" font-weight="800" text-anchor="middle" transform="rotate(-18, 148, 185)">١٤٢٦</text>
       </svg>
     `;
 
-    // ================= 2. INITIAL COMPLETE PDF DATASET (50 SYSTEMS + 38 SUB-COMPONENTS) =================
+    // ================= 2. INITIAL DATASET =================
     const INITIAL_LABS = [
       { code: 'CM-01-158', name: 'Respiratory Therapy Skills Lab (A)', college: 'Applied Medical Science - Male', region: 'Central Region' },
       { code: 'CM-01-162', name: 'Respiratory Therapy Skills Lab (B)', college: 'Applied Medical Science - Male', region: 'Central Region' }
     ];
 
     const INITIAL_INVENTORY = [
-      // ==================== LAB CM-01-158 (29 PARENT SYSTEMS) ====================
-      { id: '158-1', lab: 'CM-01-158', sn: 1, desc: 'Oximeters, Pulse', htms: '108872', ku: '84957', model: 'Radical 7', mfg: 'Masimo', serial: 'Q09397', status: 'Operational', subs: [] },
-      { id: '158-2', lab: 'CM-01-158', sn: 2, desc: 'Oxygen Delivery Units, Controlled', htms: '108875', ku: '84955', model: 'III-STA with Quick Nav', mfg: 'ResMed', serial: '20122463954', status: 'Operational', subs: [] },
-      { id: '158-3', lab: 'CM-01-158', sn: 3, desc: 'Oxygen Delivery Units, Controlled', htms: '111323', ku: '84939', model: 'III-STA with Quick Nav', mfg: 'ResMed', serial: '20122463939', status: 'Operational', subs: [] },
-      { id: '158-4', lab: 'CM-01-158', sn: 4, desc: 'Ventilators', htms: '111315', ku: '84937', model: 'Covidien 840+', mfg: 'Puritan Bennett', serial: '3512130579', status: 'Operational', subs: [] },
-      { id: '158-5', lab: 'CM-01-158', sn: 5, desc: 'Ventilators', htms: '111318', ku: '84931', model: 'Covidien 840+', mfg: 'Puritan Bennett', serial: '3512130465', status: 'Calibration Due', subs: [] },
-      { id: '158-6', lab: 'CM-01-158', sn: 6, desc: 'Ventilators', htms: '112097', ku: '106285', model: 'Covidien 840+', mfg: 'Puritan Bennett', serial: '3512151947', status: 'Operational', subs: [] },
-      { id: '158-7', lab: 'CM-01-158', sn: 7, desc: 'Ventilators', htms: '111319', ku: '84936', model: 'Servo-i', mfg: 'MAQUET', serial: '70367', status: 'Operational', subs: [] },
-      { id: '158-8', lab: 'CM-01-158', sn: 8, desc: 'Ventilators', htms: '111320', ku: '84933', model: 'Servo-i', mfg: 'MAQUET', serial: '70366', status: 'Operational', subs: [] },
-      { id: '158-9', lab: 'CM-01-158', sn: 9, desc: 'Exercisers, Wrist', htms: '118002', ku: '94248', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'NA', status: 'Operational', subs: [
-        { desc: 'Circulation pump', ku: '94247', model: 'NA', mfg: 'KYOTO KAGAKU', serial: 'AMSR64/3a' }
+      { id: '158-1', lab: 'CM-01-158', sn: 1, desc: 'Oximeters, Pulse', htms: '108872', ku: '84957', model: 'Radical 7', mfg: 'Masimo', status: 'Operational', subs: [] },
+      { id: '158-2', lab: 'CM-01-158', sn: 2, desc: 'Oxygen Delivery Units, Controlled', htms: '108875', ku: '84955', model: 'III-STA with Quick Nav', mfg: 'ResMed', status: 'Operational', subs: [] },
+      { id: '158-3', lab: 'CM-01-158', sn: 3, desc: 'Oxygen Delivery Units, Controlled', htms: '111323', ku: '84939', model: 'III-STA with Quick Nav', mfg: 'ResMed', status: 'Operational', subs: [] },
+      { id: '158-4', lab: 'CM-01-158', sn: 4, desc: 'Ventilators', htms: '111315', ku: '84937', model: 'Covidien 840+', mfg: 'Puritan Bennett', status: 'Operational', subs: [] },
+      { id: '158-5', lab: 'CM-01-158', sn: 5, desc: 'Ventilators', htms: '111318', ku: '84931', model: 'Covidien 840+', mfg: 'Puritan Bennett', status: 'Operational', subs: [] },
+      { id: '158-6', lab: 'CM-01-158', sn: 6, desc: 'Ventilators', htms: '112097', ku: '106285', model: 'Covidien 840+', mfg: 'Puritan Bennett', status: 'Operational', subs: [] },
+      { id: '158-7', lab: 'CM-01-158', sn: 7, desc: 'Ventilators', htms: '111319', ku: '84936', model: 'Servo-i', mfg: 'MAQUET', status: 'Operational', subs: [] },
+      { id: '158-8', lab: 'CM-01-158', sn: 8, desc: 'Ventilators', htms: '111320', ku: '84933', model: 'Servo-i', mfg: 'MAQUET', status: 'Operational', subs: [] },
+      { id: '158-9', lab: 'CM-01-158', sn: 9, desc: 'Exercisers, Wrist', htms: '118002', ku: '94248', model: 'M99', mfg: 'KYOTO KAGAKU', status: 'Operational', subs: [
+        { desc: 'Circulation pump', ku: '94247', model: 'NA', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '158-10', lab: 'CM-01-158', sn: 10, desc: 'Circulation pump & Wrist Exerciser Set', htms: '112099', ku: '107080', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR64/1a', status: 'Operational', subs: [
-        { desc: 'Exercisers, Wrist', ku: '107080', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'NA' },
-        { desc: 'Circulation pump', ku: 'NA', model: 'NA', mfg: 'KYOTO KAGAKU', serial: 'AMSR64/1a' }
+      { id: '158-10', lab: 'CM-01-158', sn: 10, desc: 'Circulation pump & Wrist Exerciser Set', htms: '112099', ku: '107080', model: 'M99', mfg: 'KYOTO KAGAKU', status: 'Operational', subs: [
+        { desc: 'Exercisers, Wrist', ku: '107080', model: 'M99', mfg: 'KYOTO KAGAKU' },
+        { desc: 'Circulation pump', ku: 'NA', model: 'NA', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '158-11', lab: 'CM-01-158', sn: 11, desc: 'Oximeters, Pulse', htms: '111321', ku: '84942', model: 'Radical 7', mfg: 'Masimo', serial: 'Q09420', status: 'Operational', subs: [] },
-      { id: '158-12', lab: 'CM-01-158', sn: 12, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111326', ku: '84945', model: 'MX600', mfg: 'Philips', serial: 'DE12502077', status: 'Operational', subs: [
-        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips', serial: 'DE12319100' },
-        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips', serial: 'DE9070CBPF' }
+      { id: '158-11', lab: 'CM-01-158', sn: 11, desc: 'Oximeters, Pulse', htms: '111321', ku: '84942', model: 'Radical 7', mfg: 'Masimo', status: 'Operational', subs: [] },
+      { id: '158-12', lab: 'CM-01-158', sn: 12, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111326', ku: '84945', model: 'MX600', mfg: 'Philips', status: 'Operational', subs: [
+        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips' },
+        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips' }
       ]},
-      { id: '158-13', lab: 'CM-01-158', sn: 13, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111328', ku: '84935', model: 'MX600', mfg: 'Philips', serial: 'DE12502069', status: 'Operational', subs: [
-        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips', serial: 'DE12319076' },
-        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips', serial: 'DE9070B69P' }
+      { id: '158-13', lab: 'CM-01-158', sn: 13, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111328', ku: '84935', model: 'MX600', mfg: 'Philips', status: 'Operational', subs: [
+        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips' },
+        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips' }
       ]},
-      { id: '158-14', lab: 'CM-01-158', sn: 14, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111329', ku: '84934', model: 'MX600', mfg: 'Philips', serial: 'DE12502075', status: 'Operational', subs: [
-        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips', serial: 'DE12319093' },
-        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips', serial: 'DE9070B69L' }
+      { id: '158-14', lab: 'CM-01-158', sn: 14, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111329', ku: '84934', model: 'MX600', mfg: 'Philips', status: 'Operational', subs: [
+        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips' },
+        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips' }
       ]},
-      { id: '158-15', lab: 'CM-01-158', sn: 15, desc: 'Spirometer', htms: '111869', ku: '84954', model: 'KoKo Legend', mfg: 'nSpire', serial: '2013LC0134', status: 'Operational', subs: [
-        { desc: 'Calibration syringe', ku: 'NA', model: 'NA', mfg: 'nSpire', serial: '553-40281' }
+      { id: '158-15', lab: 'CM-01-158', sn: 15, desc: 'Spirometer', htms: '111869', ku: '84954', model: 'KoKo Legend', mfg: 'nSpire', status: 'Operational', subs: [
+        { desc: 'Calibration syringe', ku: 'NA', model: 'NA', mfg: 'nSpire' }
       ]},
-      { id: '158-16', lab: 'CM-01-158', sn: 16, desc: 'Spirometer', htms: '111889', ku: '84953', model: 'KoKo Legend', mfg: 'nSpire', serial: '2013LC0135', status: 'Operational', subs: [
-        { desc: 'Calibration syringe', ku: 'NA', model: 'NA', mfg: 'nSpire', serial: '553-40267' }
+      { id: '158-16', lab: 'CM-01-158', sn: 16, desc: 'Spirometer', htms: '111889', ku: '84953', model: 'KoKo Legend', mfg: 'nSpire', status: 'Operational', subs: [
+        { desc: 'Calibration syringe', ku: 'NA', model: 'NA', mfg: 'nSpire' }
       ]},
-      { id: '158-17', lab: 'CM-01-158', sn: 17, desc: 'Ventilators', htms: '111908', ku: '84938', model: 'Babylog 8000+', mfg: 'Draeger', serial: 'ASEM0011', status: 'Operational', subs: [] },
-      { id: '158-18', lab: 'CM-01-158', sn: 18, desc: 'Ventilators', htms: '112011', ku: '84932', model: 'Babylog 8000+', mfg: 'Draeger', serial: 'ASEM0008', status: 'Operational', subs: [] },
-      { id: '158-19', lab: 'CM-01-158', sn: 19, desc: 'Portable Ventilators', htms: '112096', ku: '106284', model: 'HT70', mfg: 'Newport Medical Instruments Inc', serial: 'N13HT721112780', status: 'Maintenance', subs: [
-        { desc: 'Oxygen cylinder', ku: 'NA', model: 'NA', mfg: 'NA', serial: 'NA' }
+      { id: '158-17', lab: 'CM-01-158', sn: 17, desc: 'Ventilators', htms: '111908', ku: '84938', model: 'Babylog 8000+', mfg: 'Draeger', status: 'Operational', subs: [] },
+      { id: '158-18', lab: 'CM-01-158', sn: 18, desc: 'Ventilators', htms: '112011', ku: '84932', model: 'Babylog 8000+', mfg: 'Draeger', status: 'Operational', subs: [] },
+      { id: '158-19', lab: 'CM-01-158', sn: 19, desc: 'Portable Ventilators', htms: '112096', ku: '106284', model: 'HT70', mfg: 'Newport Medical Instruments Inc', status: 'Not Available', subs: [
+        { desc: 'Oxygen cylinder', ku: 'NA', model: 'NA', mfg: 'NA' }
       ]},
-      { id: '158-20', lab: 'CM-01-158', sn: 20, desc: 'Capnographs', htms: '108873', ku: '84958', model: 'Respsense', mfg: 'Nonin Medical', serial: '501380579', status: 'Operational', subs: [] },
-      { id: '158-21', lab: 'CM-01-158', sn: 21, desc: 'Capnographs', htms: '108874', ku: '84959', model: 'Respsense', mfg: 'Nonin Medical', serial: '501380594', status: 'Operational', subs: [] },
-      { id: '158-22', lab: 'CM-01-158', sn: 22, desc: 'Capnographs', htms: '111324', ku: '84941', model: 'Respsense', mfg: 'Nonin Medical', serial: '501380590', status: 'Operational', subs: [] },
-      { id: '158-23', lab: 'CM-01-158', sn: 23, desc: 'Physiologic Monitor Modules, Cardiac Output', htms: '112538', ku: '94319', model: 'PICCO', mfg: 'Philips', serial: '3805643702', status: 'Operational', subs: [] },
-      { id: '158-24', lab: 'CM-01-158', sn: 24, desc: 'Simulators, Training, Airway Management/Intubation', htms: '118022', ku: '94220', model: '25 00 00 33', mfg: 'Laerdal', serial: 'AMSR18.2', status: 'Operational', subs: [] },
-      { id: '158-25', lab: 'CM-01-158', sn: 25, desc: 'Simlink Adult Manikin Simulation System', htms: '118015', ku: '94333', model: '200-30250', mfg: 'Laerdal', serial: 'TSBC05013701', status: 'Operational', subs: [
-        { desc: 'Manikins, Adult', ku: '94216', model: '205-05050', mfg: 'Laerdal', serial: '205M08130001' },
-        { desc: 'Simpad', ku: '94217', model: '200-30150', mfg: 'Laerdal', serial: 'ZW1290001038' },
-        { desc: 'Battery', ku: '94334', model: '200-30350', mfg: 'Laerdal', serial: 'NA' }
+      { id: '158-20', lab: 'CM-01-158', sn: 20, desc: 'Capnographs', htms: '108873', ku: '84958', model: 'Respsense', mfg: 'Nonin Medical', status: 'Operational', subs: [] },
+      { id: '158-21', lab: 'CM-01-158', sn: 21, desc: 'Capnographs', htms: '108874', ku: '84959', model: 'Respsense', mfg: 'Nonin Medical', status: 'Operational', subs: [] },
+      { id: '158-22', lab: 'CM-01-158', sn: 22, desc: 'Capnographs', htms: '111324', ku: '84941', model: 'Respsense', mfg: 'Nonin Medical', status: 'Operational', subs: [] },
+      { id: '158-23', lab: 'CM-01-158', sn: 23, desc: 'Physiologic Monitor Modules, Cardiac Output', htms: '112538', ku: '94319', model: 'PICCO', mfg: 'Philips', status: 'Operational', subs: [] },
+      { id: '158-24', lab: 'CM-01-158', sn: 24, desc: 'Simulators, Training, Airway Management/Intubation', htms: '118022', ku: '94220', model: '25 00 00 33', mfg: 'Laerdal', status: 'Operational', subs: [] },
+      { id: '158-25', lab: 'CM-01-158', sn: 25, desc: 'Simlink Adult Manikin Simulation System', htms: '118015', ku: '94333', model: '200-30250', mfg: 'Laerdal', status: 'Operational', subs: [
+        { desc: 'Manikins, Adult', ku: '94216', model: '205-05050', mfg: 'Laerdal' },
+        { desc: 'Simpad', ku: '94217', model: '200-30150', mfg: 'Laerdal' },
+        { desc: 'Battery', ku: '94334', model: '200-30350', mfg: 'Laerdal' }
       ]},
-      { id: '158-26', lab: 'CM-01-158', sn: 26, desc: 'Simlink Newborn Manikin Simulation System', htms: '118025', ku: '94349', model: '200-30250', mfg: 'Laerdal', serial: 'TSBC08004317', status: 'Operational', subs: [
-        { desc: 'Newborn Manikins', ku: '94231', model: '226-05050', mfg: 'Laerdal', serial: '226M45120013' },
-        { desc: 'Simpad', ku: '94232', model: '200-30150', mfg: 'Laerdal', serial: 'ZW1280000110' },
-        { desc: 'Battery', ku: '94350', model: '200-30350', mfg: 'Laerdal', serial: 'NA' },
-        { desc: 'Compressor', ku: '94370', model: 'NA', mfg: 'Laerdal', serial: 'NA' }
+      { id: '158-26', lab: 'CM-01-158', sn: 26, desc: 'Simlink Newborn Manikin Simulation System', htms: '118025', ku: '94349', model: '200-30250', mfg: 'Laerdal', status: 'Operational', subs: [
+        { desc: 'Newborn Manikins', ku: '94231', model: '226-05050', mfg: 'Laerdal' },
+        { desc: 'Simpad', ku: '94232', model: '200-30150', mfg: 'Laerdal' },
+        { desc: 'Battery', ku: '94350', model: '200-30350', mfg: 'Laerdal' },
+        { desc: 'Compressor', ku: '94370', model: 'NA', mfg: 'Laerdal' }
       ]},
-      { id: '158-27', lab: 'CM-01-158', sn: 27, desc: 'Simlink Newborn Manikin Simulation System II', htms: '117993', ku: '94343', model: '200-30250', mfg: 'Laerdal', serial: 'TSBC06003675', status: 'Operational', subs: [
-        { desc: 'Newborn Manikins', ku: '94280', model: '226-05050', mfg: 'Laerdal', serial: '226M45120012' },
-        { desc: 'Simpad', ku: '94281', model: '200-30150', mfg: 'Laerdal', serial: 'ZW1270011768' },
-        { desc: 'Battery', ku: '94344', model: '200-30350', mfg: 'Laerdal', serial: 'NA' },
-        { desc: 'Compressor', ku: '94360', model: 'NA', mfg: 'Laerdal', serial: 'NA' }
+      { id: '158-27', lab: 'CM-01-158', sn: 27, desc: 'Simlink Newborn Manikin Simulation System II', htms: '117993', ku: '94343', model: '200-30250', mfg: 'Laerdal', status: 'Operational', subs: [
+        { desc: 'Newborn Manikins', ku: '94280', model: '226-05050', mfg: 'Laerdal' },
+        { desc: 'Simpad', ku: '94281', model: '200-30150', mfg: 'Laerdal' },
+        { desc: 'Battery', ku: '94344', model: '200-30350', mfg: 'Laerdal' },
+        { desc: 'Compressor', ku: '94360', model: 'NA', mfg: 'Laerdal' }
       ]},
-      { id: '158-28', lab: 'CM-01-158', sn: 28, desc: 'Simlink Training Manikin System', htms: '118012', ku: '94379', model: '200-30250', mfg: 'Laerdal', serial: 'TSBC06003835', status: 'Operational', subs: [
-        { desc: 'Training Manikins', ku: '94263', model: '231-05050', mfg: 'Laerdal', serial: '231M45120012' },
-        { desc: 'Simpad', ku: '94264', model: '200-30150', mfg: 'Laerdal', serial: 'ZW1270011805' },
-        { desc: 'Battery', ku: '94380', model: '200-30350', mfg: 'Laerdal', serial: 'NA' }
+      { id: '158-28', lab: 'CM-01-158', sn: 28, desc: 'Simlink Training Manikin System', htms: '118012', ku: '94379', model: '200-30250', mfg: 'Laerdal', status: 'Operational', subs: [
+        { desc: 'Training Manikins', ku: '94263', model: '231-05050', mfg: 'Laerdal' },
+        { desc: 'Simpad', ku: '94264', model: '200-30150', mfg: 'Laerdal' },
+        { desc: 'Battery', ku: '94380', model: '200-30350', mfg: 'Laerdal' }
       ]},
-      { id: '158-29', lab: 'CM-01-158', sn: 29, desc: 'Simlink Adult Manikin Simulation System II', htms: '117998', ku: '94383', model: '200-30250', mfg: 'Laerdal', serial: 'TSBC06004450', status: 'Operational', subs: [
-        { desc: 'Manikins, Adult', ku: '94261', model: '205-05050', mfg: 'Laerdal', serial: '205M08130004' },
-        { desc: 'Simpad', ku: '94262', model: '200-30150', mfg: 'Laerdal', serial: 'AMSR61/1a' },
-        { desc: 'Battery', ku: '94381', model: '200-30350', mfg: 'Laerdal', serial: 'NA' }
+      { id: '158-29', lab: 'CM-01-158', sn: 29, desc: 'Simlink Adult Manikin Simulation System II', htms: '117998', ku: '94383', model: '200-30250', mfg: 'Laerdal', status: 'Operational', subs: [
+        { desc: 'Manikins, Adult', ku: '94261', model: '205-05050', mfg: 'Laerdal' },
+        { desc: 'Simpad', ku: '94262', model: '200-30150', mfg: 'Laerdal' },
+        { desc: 'Battery', ku: '94381', model: '200-30350', mfg: 'Laerdal' }
       ]},
-
-      // ==================== LAB CM-01-162 (21 PARENT SYSTEMS) ====================
-      { id: '162-1', lab: 'CM-01-162', sn: 1, desc: 'Sphygmomanometers, Aneroid', htms: '110417', ku: '84946', model: '7670-10', mfg: 'Welch Allyn Inc', serial: '121029151776', status: 'Operational', subs: [] },
-      { id: '162-2', lab: 'CM-01-162', sn: 2, desc: 'Sphygmomanometers, Aneroid', htms: '110418', ku: '84949', model: '7670-10', mfg: 'Welch Allyn Inc', serial: '121114161816', status: 'Operational', subs: [] },
-      { id: '162-3', lab: 'CM-01-162', sn: 3, desc: 'Sphygmomanometers, Aneroid', htms: '110419', ku: '84950', model: '7670-10', mfg: 'Welch Allyn Inc', serial: '121029065866', status: 'Operational', subs: [] },
-      { id: '162-4', lab: 'CM-01-162', sn: 4, desc: 'Sphygmomanometers, Aneroid', htms: '110420', ku: '84952', model: '7670-10', mfg: 'Welch Allyn Inc', serial: '121114193256', status: 'Operational', subs: [] },
-      { id: '162-5', lab: 'CM-01-162', sn: 5, desc: 'Monitoring Systems, Physiologic', htms: '111127', ku: '73361', model: 'VS2 Plus', mfg: 'Philips', serial: 'cn21207768', status: 'Operational', subs: [] },
-      { id: '162-6', lab: 'CM-01-162', sn: 6, desc: 'Monitoring Systems, Physiologic', htms: '111128', ku: '78364', model: 'VS2 Plus', mfg: 'Philips', serial: 'cn21207749', status: 'Operational', subs: [] },
-      { id: '162-7', lab: 'CM-01-162', sn: 7, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111327', ku: '84947', model: 'MX600', mfg: 'Philips', serial: 'DE12502102', status: 'Operational', subs: [
-        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips', serial: 'DE12319102' },
-        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips', serial: 'DE9070CB59' }
+      { id: '162-1', lab: 'CM-01-162', sn: 1, desc: 'Sphygmomanometers, Aneroid', htms: '110417', ku: '84946', model: '7670-10', mfg: 'Welch Allyn Inc', status: 'Operational', subs: [] },
+      { id: '162-2', lab: 'CM-01-162', sn: 2, desc: 'Sphygmomanometers, Aneroid', htms: '110418', ku: '84949', model: '7670-10', mfg: 'Welch Allyn Inc', status: 'Operational', subs: [] },
+      { id: '162-3', lab: 'CM-01-162', sn: 3, desc: 'Sphygmomanometers, Aneroid', htms: '110419', ku: '84950', model: '7670-10', mfg: 'Welch Allyn Inc', status: 'Operational', subs: [] },
+      { id: '162-4', lab: 'CM-01-162', sn: 4, desc: 'Sphygmomanometers, Aneroid', htms: '110420', ku: '84952', model: '7670-10', mfg: 'Welch Allyn Inc', status: 'Operational', subs: [] },
+      { id: '162-5', lab: 'CM-01-162', sn: 5, desc: 'Monitoring Systems, Physiologic', htms: '111127', ku: '73361', model: 'VS2 Plus', mfg: 'Philips', status: 'Operational', subs: [] },
+      { id: '162-6', lab: 'CM-01-162', sn: 6, desc: 'Monitoring Systems, Physiologic', htms: '111128', ku: '78364', model: 'VS2 Plus', mfg: 'Philips', status: 'Operational', subs: [] },
+      { id: '162-7', lab: 'CM-01-162', sn: 7, desc: 'Monitoring Systems, Physiologic (Rack & Module)', htms: '111327', ku: '84947', model: 'MX600', mfg: 'Philips', status: 'Operational', subs: [
+        { desc: 'Rack', ku: 'NA', model: 'NA', mfg: 'Philips' },
+        { desc: 'Module', ku: 'NA', model: 'M3004', mfg: 'Philips' }
       ]},
-      { id: '162-8', lab: 'CM-01-162', sn: 8, desc: 'Ultrasound Therapy Systems', htms: '111317', ku: '84940', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', serial: 'VBM0134', status: 'Operational', subs: [] },
-      { id: '162-9', lab: 'CM-01-162', sn: 9, desc: 'Ultrasound Therapy Systems', htms: '111330', ku: '84948', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', serial: 'VBM0136', status: 'Operational', subs: [] },
-      { id: '162-10', lab: 'CM-01-162', sn: 10, desc: 'Ultrasound Therapy Systems', htms: '111331', ku: '84951', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', serial: 'VBM0130', status: 'Operational', subs: [] },
-      { id: '162-11', lab: 'CM-01-162', sn: 11, desc: 'Simulators, Respiration, Lung & Audio-Visual Station (M81-S)', htms: '112012', ku: '94257', model: 'AB623 / M81-S', mfg: 'KYOTO KAGAKU / Mitsubishi', serial: '27218053U', status: 'Contingency / Fault', subs: [
-        { desc: 'Simulators, Respiration, Lung', ku: '94256', model: 'M81-S', mfg: 'KYOTO KAGAKU', serial: '256' },
-        { desc: 'PC', ku: '94255', model: 'OPTIPLEX 580', mfg: 'Dell', serial: 'JF88BYBX' },
-        { desc: 'Speaker 1', ku: '94258', model: 'NA', mfg: 'TANNOY', serial: '810401' },
-        { desc: 'Speaker 2', ku: '94259', model: 'NA', mfg: 'TANNOY', serial: '807859' },
-        { desc: 'Amplifier for external speakers', ku: '94260', model: 'HST-2SCE', mfg: 'KYOTO KAGAKU', serial: 'AMSR60/1a' }
+      { id: '162-8', lab: 'CM-01-162', sn: 8, desc: 'Ultrasound Therapy Systems', htms: '111317', ku: '84940', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', status: 'Operational', subs: [] },
+      { id: '162-9', lab: 'CM-01-162', sn: 9, desc: 'Ultrasound Therapy Systems', htms: '111330', ku: '84948', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', status: 'Operational', subs: [] },
+      { id: '162-10', lab: 'CM-01-162', sn: 10, desc: 'Ultrasound Therapy Systems', htms: '111331', ku: '84951', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', status: 'Operational', subs: [] },
+      { id: '162-11', lab: 'CM-01-162', sn: 11, desc: 'Simulators, Respiration, Lung & Audio-Visual Station (M81-S)', htms: '112012', ku: '94257', model: 'AB623 / M81-S', mfg: 'KYOTO KAGAKU / Mitsubishi', status: 'Contingency / Fault', subs: [
+        { desc: 'Simulators, Respiration, Lung', ku: '94256', model: 'M81-S', mfg: 'KYOTO KAGAKU' },
+        { desc: 'PC', ku: '94255', model: 'OPTIPLEX 580', mfg: 'Dell' },
+        { desc: 'Speaker 1', ku: '94258', model: 'NA', mfg: 'TANNOY' },
+        { desc: 'Speaker 2', ku: '94259', model: 'NA', mfg: 'TANNOY' },
+        { desc: 'Amplifier for external speakers', ku: '94260', model: 'HST-2SCE', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '162-12', lab: 'CM-01-162', sn: 12, desc: 'Oximeters, Pulse', htms: '111322', ku: '84943', model: 'Radical 7', mfg: 'Masimo', serial: 'Q08463', status: 'Operational', subs: [] },
-      { id: '162-13', lab: 'CM-01-162', sn: 13, desc: 'Exercisers, Wrist & Circulation Pump', htms: '118003', ku: '94249', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR56', status: 'Operational', subs: [
-        { desc: 'Circulation pump', ku: '94250', model: 'NA', mfg: 'KYOTO KAGAKU', serial: 'AMSR56/1a' }
+      { id: '162-12', lab: 'CM-01-162', sn: 12, desc: 'Oximeters, Pulse', htms: '111322', ku: '84943', model: 'Radical 7', mfg: 'Masimo', status: 'Operational', subs: [] },
+      { id: '162-13', lab: 'CM-01-162', sn: 13, desc: 'Exercisers, Wrist & Circulation Pump', htms: '118003', ku: '94249', model: 'M99', mfg: 'KYOTO KAGAKU', status: 'Operational', subs: [
+        { desc: 'Circulation pump', ku: '94250', model: 'NA', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '162-14', lab: 'CM-01-162', sn: 14, desc: 'Circulation Pump & Wrist Exerciser Set II', htms: '118004', ku: '94251', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR64/2a', status: 'Operational', subs: [
-        { desc: 'Exercisers, Wrist', ku: '94252', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR64.2' }
+      { id: '162-14', lab: 'CM-01-162', sn: 14, desc: 'Circulation Pump & Wrist Exerciser Set II', htms: '118004', ku: '94251', model: 'M99', mfg: 'KYOTO KAGAKU', status: 'Operational', subs: [
+        { desc: 'Exercisers, Wrist', ku: '94252', model: 'M99', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '162-15', lab: 'CM-01-162', sn: 15, desc: 'Circulation Pump & Wrist Exerciser Set III', htms: '118005', ku: '94253', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR64/1a', status: 'Operational', subs: [
-        { desc: 'Exercisers, Wrist', ku: '94254', model: 'M99', mfg: 'KYOTO KAGAKU', serial: 'AMSR64.1' }
+      { id: '162-15', lab: 'CM-01-162', sn: 15, desc: 'Circulation Pump & Wrist Exerciser Set III', htms: '118005', ku: '94253', model: 'M99', mfg: 'KYOTO KAGAKU', status: 'Operational', subs: [
+        { desc: 'Exercisers, Wrist', ku: '94254', model: 'M99', mfg: 'KYOTO KAGAKU' }
       ]},
-      { id: '162-16', lab: 'CM-01-162', sn: 16, desc: 'Simulators, Training, Airway Management/Intubation', htms: '117992', ku: '94272', model: '25 00 00 33', mfg: 'Laerdal', serial: 'AMSR43', status: 'Operational', subs: [] },
-      { id: '162-17', lab: 'CM-01-162', sn: 17, desc: 'Monitoring Systems, Physiologic', htms: '111126', ku: '73362', model: 'VS2 Plus', mfg: 'Philips', serial: 'cn21207755', status: 'Operational', subs: [] },
-      { id: '162-18', lab: 'CM-01-162', sn: 18, desc: 'Oximeters, Pulse', htms: '108871', ku: '84956', model: 'Radical 7', mfg: 'Masimo', serial: 'Q08481', status: 'Operational', subs: [] },
-      { id: '162-19', lab: 'CM-01-162', sn: 19, desc: 'Ultrasound Therapy Systems', htms: '111316', ku: '84930', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', serial: 'VBM0139', status: 'Operational', subs: [] },
-      { id: '162-20', lab: 'CM-01-162', sn: 20, desc: 'Electrodes', htms: '118021', ku: '94228', model: '260-20001', mfg: 'Laerdal', serial: '260M08130001', status: 'Operational', subs: [] },
-      { id: '162-21', lab: 'CM-01-162', sn: 21, desc: 'Simulators, Training, Airway Management/Intubation', htms: '118024', ku: '94221', model: '25 00 00 33', mfg: 'Laerdal', serial: 'AMSR18.1', status: 'Operational', subs: [] }
+      { id: '162-16', lab: 'CM-01-162', sn: 16, desc: 'Simulators, Training, Airway Management/Intubation', htms: '117992', ku: '94272', model: '25 00 00 33', mfg: 'Laerdal', status: 'Operational', subs: [] },
+      { id: '162-17', lab: 'CM-01-162', sn: 17, desc: 'Monitoring Systems, Physiologic', htms: '111126', ku: '73362', model: 'VS2 Plus', mfg: 'Philips', status: 'Operational', subs: [] },
+      { id: '162-18', lab: 'CM-01-162', sn: 18, desc: 'Oximeters, Pulse', htms: '108871', ku: '84956', model: 'Radical 7', mfg: 'Masimo', status: 'Operational', subs: [] },
+      { id: '162-19', lab: 'CM-01-162', sn: 19, desc: 'Ultrasound Therapy Systems', htms: '111316', ku: '84930', model: 'G5 Digital Experience', mfg: 'General Physiotherapy, Inc.', status: 'Operational', subs: [] },
+      { id: '162-20', lab: 'CM-01-162', sn: 20, desc: 'Electrodes', htms: '118021', ku: '94228', model: '260-20001', mfg: 'Laerdal', status: 'Operational', subs: [] },
+      { id: '162-21', lab: 'CM-01-162', sn: 21, desc: 'Simulators, Training, Airway Management/Intubation', htms: '118024', ku: '94221', model: '25 00 00 33', mfg: 'Laerdal', status: 'Operational', subs: [] }
     ];
 
     const INITIAL_LOGS = [
@@ -1043,11 +1313,11 @@
         ku: '94257',
         deviceName: 'Simulators, Respiration, Lung & Audio-Visual Station (M81-S)',
         status: 'Contingency / Fault',
-        issue: 'External speaker channel 2 (TANNOY SN: 807859) intermittent audio output during lung auscultation simulation.',
-        action: 'Switched audio routing to primary amplifier HST-2SCE (KU #94260) mono-bridge mode; replacement audio cable ordered.',
-        engineer: 'Eng. Obaid Shaya Al Jarwi',
-        badge: '68459',
-        timestamp: '2026-10-16 09:40 AM'
+        issue: 'External speaker channel 2 intermittent audio output during lung auscultation simulation.',
+        action: 'Switched audio routing to primary amplifier HST-2SCE (KU #94260) mono-bridge mode; replacement audio cable requested.',
+        specialist: 'Abdulrahman Mufti, RT Specialist',
+        contact: 'muftiab@ksau-hs.edu.sa',
+        timestamp: '2026-10-18 09:40 AM'
       },
       {
         id: 'LOG-102',
@@ -1056,53 +1326,41 @@
         htms: '112096',
         ku: '106284',
         deviceName: 'Portable Ventilators (Newport HT70)',
-        status: 'Maintenance',
-        issue: 'Internal backup battery capacity test below 80% threshold during quarterly preventive maintenance.',
-        action: 'Connected to continuous AC dock; Covidien 840+ (HTMS #112097) assigned as contingency backup ventilator.',
-        engineer: 'Eng. Obaid Shaya Al Jarwi',
-        badge: '68459',
-        timestamp: '2026-10-14 02:15 PM'
-      },
-      {
-        id: 'LOG-103',
-        deviceId: '158-5',
-        lab: 'CM-01-158',
-        htms: '111318',
-        ku: '84931',
-        deviceName: 'Ventilators (Puritan Bennett Covidien 840+)',
-        status: 'Calibration Due',
-        issue: 'Scheduled bi-annual flow sensor & O2 cell calibration verification due.',
-        action: 'Scheduled with HTMS Biomedical Workshop; unit remains operational for non-critical training.',
-        engineer: 'Eng. Obaid Shaya Al Jarwi',
-        badge: '68459',
-        timestamp: '2026-10-11 11:00 AM'
+        status: 'Not Available',
+        issue: 'Unit temporarily unavailable during internal battery pack replacement.',
+        action: 'Covidien 840+ (HTMS #112097) allocated as contingency backup ventilator for Lab CM-01-158.',
+        specialist: 'Abdulrahman Mufti, RT Specialist',
+        contact: 'muftiab@ksau-hs.edu.sa',
+        timestamp: '2026-10-17 02:15 PM'
       }
     ];
 
     const INITIAL_USERS = [
       {
-        username: 'admin',
-        password: 'ksauhs2026',
-        name: 'Eng. Obaid Shaya Al Jarwi',
-        badge: '68459',
-        role: 'Master HTMS Administrator',
+        username: 'amufti',
+        password: 'RT-w7xD-hxsZ',
+        name: 'Abdulrahman Mufti',
+        role: 'RT Specialist',
+        email: 'muftiab@ksau-hs.edu.sa',
+        phone: '0114299999 ext. 98317',
+        isMaster: true,
         perms: { editEq: true, logIssue: true, manageLabs: true, manageUsers: true }
       }
     ];
 
-    // ================= 3. BILINGUAL ARABIC / ENGLISH DICTIONARY =================
     const I18N = {
       en: {
         uniName: 'King Saud bin Abdulaziz University for Health Sciences',
-        htmsSubtitle: 'Healthcare Technology Management Services (HTMS)',
-        portalSignIn: 'HTMS Portal Sign In',
+        htmsSubtitle: 'Respiratory Therapy Skills Labs • Inventory & Contingency System',
+        portalSignIn: 'Staff Portal Sign In',
         portalSignInSub: 'Enter your authorized university credentials to access the system',
         usernameLabel: 'Username',
         passwordLabel: 'Password',
         signInBtn: 'Authenticate & Enter Portal',
         loginFooter: 'College of Applied Medical Sciences • Central Region • Riyadh',
-        headerTitle: 'KSAU-HS • Healthcare Technology Management Services',
-        headerSub: 'Central Region • College of Applied Medical Sciences (Male) • Respiratory Therapy Skills Labs',
+        headerTitle: 'KSAU-HS • Respiratory Therapy Skills Lab Inventory & Contingency',
+        headerSub: 'Central Region • College of Applied Medical Sciences (Male) • Labs CM-01-158 & CM-01-162',
+        resetPassBtn: 'Reset Password',
         qrAccessBtn: 'QR Access',
         exportExcelBtn: 'Export Excel (.xlsx)',
         officialReportBtn: 'Official Report / Print',
@@ -1112,64 +1370,65 @@
         kpiAttachedModules: 'Simpads, Racks & Modules',
         kpiOperational: 'Operational',
         kpiReadyForLab: 'Ready for Clinical Skills',
-        kpiMaintenance: 'Maintenance / Calib.',
-        kpiScheduledPM: 'Scheduled PM / Check',
         kpiContingency: 'Contingency / Fault',
         kpiActiveBackup: 'Backup Unit Assigned',
+        kpiNotAvailable: 'Not Available',
+        kpiOutService: 'Can Reset to Operational',
         kpiLabsCount: 'Active Skills Labs',
         kpiCentralRegion: 'CAMS-Male • Central',
         selectLabHeading: 'Respiratory Therapy Skills Laboratories (Filter by Lab)',
         createNewLabBtn: '+ Create New Lab',
         tabInventory: 'Medical Equipment Inventory',
-        tabContingency: 'Contingency & Maintenance Log',
-        tabStaff: 'Staff Credentials & Permissions',
+        tabContingency: 'Contingency Log',
+        tabCreateUser: 'Create User',
+        tabStaff: 'Authorized Staff Credentials & Access Control',
+        resetAllStatusBtn: 'Reset All Statuses to Operational',
         expandAllSubs: 'Expand All Sub-Components',
         addEquipmentBtn: '+ Add Medical Equipment',
-        searchPlaceholder: 'Search by Description, HTMS #, KU #, Model, Serial #, or Sub-component...',
+        searchPlaceholder: 'Search by Description, HTMS #, KU #, Model, Manufacturer, or Sub-component...',
         allStatuses: 'All Operational Statuses',
         statusOperational: 'Operational',
-        statusMaintenance: 'Under Maintenance',
-        statusCalibration: 'Calibration Due',
         statusFault: 'Contingency / Fault',
+        statusNotAvailable: 'Not Available',
         allManufacturers: 'All Manufacturers',
-        resetFiltersBtn: 'Reset Filters',
+        resetFiltersBtn: 'Clear Search Filters',
         thLabSn: 'Lab / SN',
         thDescription: 'Medical Equipment Description',
         thHtmsNo: 'HTMS No.',
         thKuNo: 'KU No.',
         thModel: 'Model',
         thManufacturer: 'Manufacturer',
-        thSerial: 'Serial No.',
         thStatus: 'Status',
         thActions: 'Actions',
-        logbookHeading: 'HTMS Contingency & Corrective Maintenance Logbook',
-        logbookSub: 'Official record of equipment faults, backup unit allocations, calibration checks, and engineer sign-offs',
-        logNewIssueBtn: '+ Log New Contingency Issue',
+        logbookHeading: 'Respiratory Therapy Lab Contingency Logbook',
+        logbookSub: 'Official record of equipment faults, unavailable devices, backup unit allocations, and status resets',
+        logNewIssueBtn: '+ Log Contingency Issue',
+        createUserPageHeading: 'Create New Staff Account & Assign Permissions',
+        createUserPageSub: 'Provision login credentials for Respiratory Therapy faculty, specialists, or lab staff',
         staffHeading: 'Authorized Staff Credentials & Access Control',
-        staffSub: 'Create accounts for engineers, lab coordinators, or auditors and configure editing/adding permissions',
-        createStaffBtn: '+ Create Staff Account',
-        endUserVerification: 'END-USER / LAB VERIFICATION',
-        htmsEngineerSignoff: 'HTMS ENGINEER SIGN-OFF',
-        reportModalTitle: 'Official KSAU-HS HTMS Inventory & Contingency Report',
-        reportModalSub: 'Formatted A4 Official University Document — Download directly as PDF or Print',
+        staffSub: 'Manage staff accounts, reset passwords, and configure permissions',
+        createStaffBtn: '+ Create New User',
+        rtSpecialistSignoff: 'RT SPECIALIST SIGN-OFF & LAB SUPERVISOR',
+        reportModalTitle: 'Official KSAU-HS Inventory & Contingency Report',
+        reportModalSub: 'Includes Complete Equipment Inventory & Contingency Logbook — Download PDF or Print',
         downloadPdfBtn: 'Download Official PDF (.pdf)',
         printDocBtn: 'Print Document',
         qrModalTitle: 'Mobile & Tablet QR Portal Access',
         scanQrPrompt: 'Scan with any smartphone or tablet camera to open the live inventory & contingency log',
-        qrUrlLabel: 'Portal URL Encoded in QR',
         downloadQrPosterBtn: 'Download Printable Lab Door QR Card (.pdf)'
       },
       ar: {
         uniName: 'جامعة الملك سعود بن عبد العزيز للعلوم الصحية',
-        htmsSubtitle: 'إدارة خدمات تكنولوجيا الرعاية الصحية (HTMS)',
-        portalSignIn: 'تسجيل الدخول لبوابة HTMS',
+        htmsSubtitle: 'معامل مهارات العلاج التنفسي • نظام الجرد والطوارئ',
+        portalSignIn: 'تسجيل دخول الموظفين',
         portalSignInSub: 'أدخل بيانات الاعتماد الجامعية المصرح بها للوصول إلى النظام',
         usernameLabel: 'اسم المستخدم',
         passwordLabel: 'كلمة المرور',
         signInBtn: 'توثيق الدخول إلى البوابة',
         loginFooter: 'كلية العلوم الطبية التطبيقية • المنطقة الوسطى • الرياض',
-        headerTitle: 'KSAU-HS • إدارة خدمات تكنولوجيا الرعاية الصحية',
-        headerSub: 'المنطقة الوسطى • كلية العلوم الطبية التطبيقية (طلاب) • معامل مهارات العلاج التنفسي',
+        headerTitle: 'KSAU-HS • نظام جرد وطوارئ معامل مهارات العلاج التنفسي',
+        headerSub: 'المنطقة الوسطى • كلية العلوم الطبية التطبيقية (طلاب) • المعامل CM-01-158 و CM-01-162',
+        resetPassBtn: 'تغيير كلمة المرور',
         qrAccessBtn: 'رمز QR للجوال',
         exportExcelBtn: 'تصدير إكسل (.xlsx)',
         officialReportBtn: 'التقرير الرسمي / طباعة',
@@ -1179,57 +1438,54 @@
         kpiAttachedModules: 'وحدات Simpad والرفوف والملحقات',
         kpiOperational: 'يعمل بكفاءة',
         kpiReadyForLab: 'جاهز للتدريب السريري',
-        kpiMaintenance: 'صيانة / معايرة',
-        kpiScheduledPM: 'صيانة وقائية مجدولة',
         kpiContingency: 'طوارئ / عطل',
         kpiActiveBackup: 'تم تخصيص جهاز بديل',
+        kpiNotAvailable: 'غير متاح',
+        kpiOutService: 'قابل لإعادة الضبط للتشغيل',
         kpiLabsCount: 'المعامل النشطة',
         kpiCentralRegion: 'العلوم الطبية • الوسطى',
         selectLabHeading: 'معامل مهارات العلاج التنفسي (تصفية حسب المعمل)',
         createNewLabBtn: '+ إضافة معمل جديد',
         tabInventory: 'سجل جرد الأجهزة الطبية',
-        tabContingency: 'سجل الطوارئ والصيانة التصحيحية',
-        tabStaff: 'صلاحيات وبيانات الموظفين',
+        tabContingency: 'سجل الطوارئ',
+        tabCreateUser: 'إنشاء مستخدم',
+        tabStaff: 'صلاحيات وبيانات الموظفين المعتمدين',
+        resetAllStatusBtn: 'إعادة ضبط جميع الأجهزة إلى قيد التشغيل',
         expandAllSubs: 'توسيع جميع المكونات الفرعية',
         addEquipmentBtn: '+ إضافة جهاز طبي',
-        searchPlaceholder: 'ابحث بالوصف، رقم HTMS، رقم KU، الموديل، الرقم التسلسلي...',
+        searchPlaceholder: 'ابحث بالوصف، رقم HTMS، رقم KU، الموديل، الشركة المصنعة...',
         allStatuses: 'جميع حالات التشغيل',
         statusOperational: 'يعمل بكفاءة',
-        statusMaintenance: 'تحت الصيانة',
-        statusCalibration: 'مستحق للمعايرة',
         statusFault: 'طوارئ / عطل',
+        statusNotAvailable: 'غير متاح',
         allManufacturers: 'جميع الشركات المصنعة',
-        resetFiltersBtn: 'إعادة ضبط',
+        resetFiltersBtn: 'إعادة ضبط البحث',
         thLabSn: 'المعمل / م',
         thDescription: 'وصف الجهاز الطبي',
         thHtmsNo: 'رقم HTMS',
         thKuNo: 'رقم KU',
         thModel: 'الموديل',
         thManufacturer: 'الشركة المصنعة',
-        thSerial: 'الرقم التسلسلي',
         thStatus: 'الحالة',
         thActions: 'الإجراءات',
-        logbookHeading: 'سجل الطوارئ والصيانة التصحيحية (HTMS)',
-        logbookSub: 'السجل الرسمي لأعطال الأجهزة وتخصيص الوحدات البديلة وفحوصات المعايرة وتوقيع المهندس',
-        logNewIssueBtn: '+ تسجيل بلاغ طوارئ أو صيانة',
-        staffHeading: 'إدارة حسابات الموظفين وصلاحيات الوصول',
-        staffSub: 'إنشاء حسابات للمهندسين ومنسقي المعامل وتحديد صلاحيات الإضافة والتعديل',
-        createStaffBtn: '+ إنشاء حساب موظف',
-        endUserVerification: 'اعتماد المعمل / المستخدم النهائي',
-        htmsEngineerSignoff: 'اعتماد مهندس HTMS',
+        logbookHeading: 'سجل الطوارئ والأعطال لمعامل العلاج التنفسي',
+        logbookSub: 'السجل الرسمي لأعطال الأجهزة وتخصيص الوحدات البديلة وإعادة ضبط الجاهزية',
+        logNewIssueBtn: '+ تسجيل بلاغ طوارئ',
+        createUserPageHeading: 'إنشاء حساب موظف جديد وتحديد الصلاحيات',
+        createUserPageSub: 'إصدار بيانات دخول لأعضاء هيئة التدريس أو أخصائيي العلاج التنفسي',
+        staffHeading: 'إدارة حسابات الموظفين المعتمدين وصلاحيات الوصول',
+        staffSub: 'إدارة الحسابات وإعادة تعيين كلمات المرور',
+        createStaffBtn: '+ إنشاء مستخدم جديد',
+        rtSpecialistSignoff: 'اعتماد أخصائي العلاج التنفسي ومشرف المعامل',
         reportModalTitle: 'التقرير الرسمي لجرد الأجهزة الطبية وسجل الطوارئ - KSAU-HS',
-        reportModalSub: 'وثيقة جامعية رسمية بحجم A4 — جاهزة للتحميل المباشر بصيغة PDF أو الطباعة',
-        downloadPdfBtn: 'تحميل التقرير الرسمي (.pdf)',
-        printDocBtn: 'طباعة الوثيقة',
+        reportModalSub: 'يشمل سجل الجرد الكامل وسجل الطوارئ — تحميل PDF أو طباعة',
+        downloadPdfBtn: 'تحميل PDF رسمي (.pdf)',
+        printDocBtn: 'طباعة المستند',
         qrModalTitle: 'الوصول السريع عبر رمز الاستجابة السريعة (QR)',
-        scanQrPrompt: 'امسح الرمز بكاميرا الجوال أو الجهاز اللوحي لفتح سجل الجرد والطوارئ مباشرة',
-        qrUrlLabel: 'رابط البوابة المضمن في رمز QR',
+        scanQrPrompt: 'امسح الرمز بكاميرا الجوال أو الجهاز اللوحي لفتح سجل الجرد والطوارئ',
         downloadQrPosterBtn: 'تحميل بطاقة QR لباب المعمل (.pdf)'
       }
     };
-
-    // ================= 4. APPLICATION STATE =================
-    const LOCAL_STORAGE_KEY = 'ksau_hs_htms_portal_v2_backup';
 
     let state = {
       lang: 'en',
@@ -1247,41 +1503,6 @@
 
     let db = null;
     let isCloudConnected = false;
-
-    // ================= 5. LOGO RENDERING (EXACT IMAGE OR ULTRA-CRISP VECTOR SEAL) =================
-    function renderAllLogos() {
-      const slots = document.querySelectorAll('.ksau-logo-slot');
-      slots.forEach(slot => {
-        if (state.customLogoDataUrl) {
-          slot.innerHTML = `<img src="${state.customLogoDataUrl}" alt="KSAU-HS Emblem" class="w-full h-full object-contain rounded-full" />`;
-        } else {
-          slot.innerHTML = `
-            <img src="images_2.jpg" alt="KSAU-HS" class="w-full h-full object-contain rounded-full"
-                 onerror="this.onerror=null; this.src='images.jpg'; this.addEventListener('error', () => { this.parentElement.innerHTML = window.__EXACT_KSAU_SVG; });" />
-          `;
-        }
-      });
-    }
-    window.__EXACT_KSAU_SVG = EXACT_KSAU_SVG;
-
-    window.triggerLogoUpload = function() {
-      document.getElementById('logo-file-input').click();
-    };
-
-    window.handleLogoFileUpload = function(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        state.customLogoDataUrl = e.target.result;
-        renderAllLogos();
-        await persistState();
-        showToast(state.lang === 'ar' ? 'تم تحديث شعار الجامعة الرسمي بنجاح' : 'Official KSAU-HS Emblem image updated permanently');
-      };
-      reader.readAsDataURL(file);
-    };
-
-    // ================= 6. YOUR KSAU-HS-HTMS FIREBASE CLOUD FIRESTORE SYNCHRONIZATION =================
     const firebaseConfig = {
       apiKey: "AIzaSyDlTDTY-0zpnF4TS0xGwwiXinqcsqMNN84",
       authDomain: "ksau-hs-htms.firebaseapp.com",
@@ -1292,24 +1513,53 @@
       measurementId: "G-5B2CL51V6N"
     };
 
-    function loadLocalBackup() {
+    function renderAllLogos() {
+      const slots = document.querySelectorAll('.ksau-logo-slot');
+      slots.forEach(slot => {
+        if (state.customLogoDataUrl) {
+          slot.innerHTML = `<img src="${state.customLogoDataUrl}" alt="KSAU-HS Emblem" class="w-full h-full object-contain rounded-full" />`;
+        } else {
+          slot.innerHTML = `<img src="images_2.jpg" alt="KSAU-HS" class="w-full h-full object-contain rounded-full" onerror="this.onerror=null; this.src='images.jpg'; this.addEventListener('error', () => { if (this.parentElement) this.parentElement.innerHTML = window.__EXACT_KSAU_SVG; });" />`;
+        }
+      });
+    }
+    window.__EXACT_KSAU_SVG = EXACT_KSAU_SVG;
+
+    window.triggerLogoUpload = function() {
+      document.getElementById('global-logo-upload').click();
+    };
+
+    window.handleLogoUpload = function(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        state.customLogoDataUrl = e.target.result;
+        renderAllLogos();
+        await persistState();
+        showToast('Official university emblem updated successfully');
+      };
+      reader.readAsDataURL(file);
+    };
+
+    function loadLocalCache() {
       try {
-        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const raw = localStorage.getItem('ksau_rt_portal_v5');
         if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed.labs) state.labs = parsed.labs;
-        if (parsed.inventory) state.inventory = parsed.inventory;
-        if (parsed.logs) state.logs = parsed.logs;
-        if (parsed.users) state.users = parsed.users;
-        if (parsed.customLogoDataUrl) state.customLogoDataUrl = parsed.customLogoDataUrl;
+        const p = JSON.parse(raw);
+        if (p.labs) state.labs = p.labs;
+        if (p.inventory) state.inventory = p.inventory;
+        if (p.logs) state.logs = p.logs;
+        if (p.users) state.users = p.users;
+        if (p.customLogoDataUrl) state.customLogoDataUrl = p.customLogoDataUrl;
       } catch (e) {
-        console.warn('Local cache load warning:', e);
+        console.warn('Local cache warning:', e);
       }
     }
 
-    function saveLocalBackup() {
+    function saveLocalCache() {
       try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+        localStorage.setItem('ksau_rt_portal_v5', JSON.stringify({
           labs: state.labs,
           inventory: state.inventory,
           logs: state.logs,
@@ -1322,17 +1572,16 @@
     }
 
     async function initCloudSync() {
-      loadLocalBackup();
+      loadLocalCache();
       renderAllLogos();
-
       try {
         const app = initializeApp(firebaseConfig);
         try { getAnalytics(app); } catch (_) {}
         db = getFirestore(app);
         isCloudConnected = true;
 
-        const stateDocRef = doc(db, 'htms_portal', 'master_v2');
-        onSnapshot(stateDocRef, (snap) => {
+        const docRef = doc(db, 'ksau_rt_portal', 'master_state_v5');
+        onSnapshot(docRef, (snap) => {
           if (snap.exists()) {
             const data = snap.data();
             if (data.labs) state.labs = JSON.parse(data.labs);
@@ -1340,33 +1589,28 @@
             if (data.logs) state.logs = JSON.parse(data.logs);
             if (data.users) state.users = JSON.parse(data.users);
             if (data.customLogoDataUrl !== undefined) state.customLogoDataUrl = data.customLogoDataUrl || null;
-            saveLocalBackup();
+            saveLocalCache();
             renderAllLogos();
             if (state.currentUser) {
-              const updatedMe = state.users.find(u => u.username.toLowerCase() === state.currentUser.username.toLowerCase());
-              if (updatedMe) {
-                state.currentUser = updatedMe;
-                updateUserHeaderUI();
-              }
+              const me = state.users.find(u => u.username.toLowerCase() === state.currentUser.username.toLowerCase());
+              if (me) { state.currentUser = me; updateUserHeaderUI(); }
               refreshAllViews();
             }
           } else {
             persistState();
           }
-        }, (err) => {
-          console.warn('Firestore real-time listener fallback:', err);
         });
       } catch (e) {
-        console.warn('Using local backup state:', e);
+        console.warn('Firestore fallback active:', e);
       }
     }
 
     async function persistState() {
-      saveLocalBackup();
+      saveLocalCache();
       if (isCloudConnected && db) {
         try {
-          const stateDocRef = doc(db, 'htms_portal', 'master_v2');
-          await setDoc(stateDocRef, {
+          const docRef = doc(db, 'ksau_rt_portal', 'master_state_v5');
+          await setDoc(docRef, {
             labs: JSON.stringify(state.labs),
             inventory: JSON.stringify(state.inventory),
             logs: JSON.stringify(state.logs),
@@ -1380,7 +1624,206 @@
       }
     }
 
-    // ================= 7. AUTHENTICATION & GRANULAR PERMISSIONS =================
+    window.switchLoginPortalView = function(view) {
+      const signinForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-portal-form');
+      const forgotView = document.getElementById('forgot-portal-view');
+      const resetLinkForm = document.getElementById('reset-via-link-form');
+      const modeTabs = document.getElementById('login-mode-tabs');
+
+      signinForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      forgotView.classList.add('hidden');
+      resetLinkForm.classList.add('hidden');
+
+      document.getElementById('login-error').classList.add('hidden');
+      document.getElementById('login-success-banner').classList.add('hidden');
+      document.getElementById('reg-portal-error').classList.add('hidden');
+      document.getElementById('forgot-error-box').classList.add('hidden');
+      document.getElementById('forgot-dispatched-box').classList.add('hidden');
+      document.getElementById('reset-link-error').classList.add('hidden');
+
+      const tabSignin = document.getElementById('tab-login-signin');
+      const tabRegister = document.getElementById('tab-login-register');
+
+      if (view === 'signin') {
+        modeTabs.classList.remove('hidden');
+        signinForm.classList.remove('hidden');
+        tabSignin.className = 'py-2 rounded-xl text-xs font-extrabold transition bg-white text-ksau-800 shadow-sm';
+        tabRegister.className = 'py-2 rounded-xl text-xs font-extrabold transition text-slate-600 hover:text-slate-900';
+      } else if (view === 'register') {
+        modeTabs.classList.remove('hidden');
+        registerForm.classList.remove('hidden');
+        tabRegister.className = 'py-2 rounded-xl text-xs font-extrabold transition bg-white text-ksau-800 shadow-sm';
+        tabSignin.className = 'py-2 rounded-xl text-xs font-extrabold transition text-slate-600 hover:text-slate-900';
+      } else if (view === 'forgot') {
+        modeTabs.classList.add('hidden');
+        forgotView.classList.remove('hidden');
+      } else if (view === 'resetlink') {
+        modeTabs.classList.add('hidden');
+        resetLinkForm.classList.remove('hidden');
+      }
+      lucide.createIcons();
+    };
+
+    window.handlePortalCreateAccount = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-portal-name').value.trim();
+      const email = document.getElementById('reg-portal-email').value.trim();
+      const username = document.getElementById('reg-portal-username').value.trim();
+      const password = document.getElementById('reg-portal-password').value.trim();
+      const errBox = document.getElementById('reg-portal-error');
+
+      if (password.length < 4) {
+        errBox.textContent = 'Password must be at least 4 characters.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (state.users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        errBox.textContent = 'This username is already taken. Please choose another username.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (state.users.some(u => (u.email || '').toLowerCase() === email.toLowerCase())) {
+        errBox.textContent = 'An account with this email address already exists. Use Forgot Password if needed.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const newAcc = {
+        name,
+        role: 'RT Lab Staff',
+        email,
+        phone: '0114299999 ext. 98317',
+        username,
+        password,
+        isMaster: false,
+        perms: { editEq: true, logIssue: true, manageLabs: false, manageUsers: false }
+      };
+
+      state.users.push(newAcc);
+      await persistState();
+
+      document.getElementById('register-portal-form').reset();
+      state.currentUser = newAcc;
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app-shell').classList.remove('hidden');
+      updateUserHeaderUI();
+      refreshAllViews();
+      showToast(`Welcome, ${newAcc.name}! Your account has been created.`);
+    };
+
+    window.handleForgotPasswordRequest = async function(e) {
+      e.preventDefault();
+      const query = document.getElementById('forgot-identifier-input').value.trim().toLowerCase();
+      const errBox = document.getElementById('forgot-error-box');
+      const dispatchedBox = document.getElementById('forgot-dispatched-box');
+
+      const matchedUser = state.users.find(u =>
+        u.username.toLowerCase() === query || (u.email && u.email.toLowerCase() === query)
+      );
+
+      if (!matchedUser || !matchedUser.email) {
+        errBox.textContent = 'No account found with that email address or username.';
+        errBox.classList.remove('hidden');
+        dispatchedBox.classList.add('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      const resetToken = 'RST-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+      matchedUser.resetToken = resetToken;
+      await persistState();
+
+      const baseUrl = window.location.href.split('?')[0];
+      const resetUrl = `${baseUrl}?resetToken=${encodeURIComponent(resetToken)}&user=${encodeURIComponent(matchedUser.username)}`;
+
+      document.getElementById('forgot-sent-email').textContent = matchedUser.email;
+
+      const openNowBtn = document.getElementById('btn-open-reset-link-now');
+      openNowBtn.onclick = function() {
+        openResetLinkScreen(matchedUser.username, resetToken);
+      };
+
+      const subject = encodeURIComponent('KSAU-HS RT Portal - Password Reset Link');
+      const body = encodeURIComponent(
+        `Hello ${matchedUser.name},\n\n` +
+        `A password reset was requested for your KSAU-HS Respiratory Therapy Skills Lab account (Username: ${matchedUser.username}).\n\n` +
+        `Click the link below to reset your password:\n${resetUrl}\n\n` +
+        `Reset Token: ${resetToken}\n\n` +
+        `KSAU-HS Respiratory Therapy Skills Labs`
+      );
+      document.getElementById('btn-mailto-reset-link').href = `mailto:${matchedUser.email}?subject=${subject}&body=${body}`;
+
+      dispatchedBox.classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.openResetLinkScreen = function(username, token) {
+      const targetUser = state.users.find(u => u.username.toLowerCase() === (username || '').toLowerCase());
+      if (!targetUser) {
+        switchLoginPortalView('signin');
+        return;
+      }
+      document.getElementById('reset-link-username').value = targetUser.username;
+      document.getElementById('reset-link-token').value = token || '';
+      document.getElementById('reset-link-account-label').textContent = `${targetUser.name} (${targetUser.username} • ${targetUser.email})`;
+      document.getElementById('reset-link-new-pass').value = '';
+      document.getElementById('reset-link-confirm-pass').value = '';
+      switchLoginPortalView('resetlink');
+    };
+
+    window.handleCompletePasswordResetFromLink = async function(e) {
+      e.preventDefault();
+      const uname = document.getElementById('reset-link-username').value;
+      const token = document.getElementById('reset-link-token').value;
+      const newPass = document.getElementById('reset-link-new-pass').value.trim();
+      const confPass = document.getElementById('reset-link-confirm-pass').value.trim();
+      const errBox = document.getElementById('reset-link-error');
+
+      const targetUser = state.users.find(u => u.username.toLowerCase() === uname.toLowerCase());
+      if (!targetUser) {
+        errBox.textContent = 'Invalid account for password reset.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (targetUser.resetToken && token && targetUser.resetToken !== token) {
+        errBox.textContent = 'This password reset link has expired or is invalid.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        errBox.textContent = 'New password must be at least 4 characters.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confPass) {
+        errBox.textContent = 'New password and confirmation do not match.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      targetUser.password = newPass;
+      delete targetUser.resetToken;
+      await persistState();
+
+      if (window.location.search.includes('resetToken')) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      switchLoginPortalView('signin');
+      document.getElementById('login-username').value = targetUser.username;
+      document.getElementById('login-password').value = '';
+      const banner = document.getElementById('login-success-banner');
+      document.getElementById('login-success-text').textContent = `Password updated for ${targetUser.username}! Sign in with your new password.`;
+      banner.classList.remove('hidden');
+    };
+
     window.handleLogin = function(e) {
       e.preventDefault();
       const u = document.getElementById('login-username').value.trim();
@@ -1406,12 +1849,28 @@
       document.getElementById('login-password').value = '';
       document.getElementById('app-shell').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
+      switchLoginPortalView('signin');
     };
 
     window.togglePasswordVisibility = function() {
       const inp = document.getElementById('login-password');
       inp.type = inp.type === 'password' ? 'text' : 'password';
     };
+
+    function isCurrentUserMaster() {
+      return !!(state.currentUser && (state.currentUser.isMaster || state.currentUser.username.toLowerCase() === 'amufti'));
+    }
+
+    function canCurrentUserModifyAccount(targetUser) {
+      if (!state.currentUser) return false;
+      if (targetUser.isMaster || targetUser.username.toLowerCase() === 'amufti') {
+        return isCurrentUserMaster();
+      }
+      if (state.currentUser.username.toLowerCase() === targetUser.username.toLowerCase()) {
+        return true;
+      }
+      return !!state.currentUser.perms?.manageUsers;
+    }
 
     function updateUserHeaderUI() {
       const u = state.currentUser;
@@ -1420,23 +1879,103 @@
       document.getElementById('user-avatar').textContent = initials;
       document.getElementById('user-display-name').textContent = u.name;
       document.getElementById('user-role-badge').textContent = u.role;
-      document.getElementById('user-badge-line').textContent = `Badge #${u.badge}`;
+      document.getElementById('user-contact-line').textContent = u.email || 'muftiab@ksau-hs.edu.sa';
 
-      // Apply RBAC visibility
       document.getElementById('btn-add-equipment').style.display = u.perms.editEq ? 'inline-flex' : 'none';
       document.getElementById('btn-new-contingency').style.display = u.perms.logIssue ? 'inline-flex' : 'none';
+      document.getElementById('btn-reset-all-status').style.display = u.perms.logIssue ? 'inline-flex' : 'none';
       document.getElementById('btn-create-lab').style.display = u.perms.manageLabs ? 'inline-flex' : 'none';
       document.getElementById('btn-create-staff').style.display = u.perms.manageUsers ? 'inline-flex' : 'none';
+
+      const lockedNotice = document.getElementById('create-user-locked-notice');
+      const createForm = document.getElementById('page-create-user-form');
+      if (u.perms.manageUsers) {
+        lockedNotice.classList.add('hidden');
+        createForm.classList.remove('opacity-50', 'pointer-events-none');
+      } else {
+        lockedNotice.classList.remove('hidden');
+        createForm.classList.add('opacity-50', 'pointer-events-none');
+      }
     }
 
-    // ================= 8. BILINGUAL LANGUAGE SWITCHER (RTL / LTR) =================
+    window.openPasswordResetModal = function(targetUsername = null) {
+      if (!state.currentUser) return;
+      const uname = targetUsername || state.currentUser.username;
+      const targetAcc = state.users.find(u => u.username.toLowerCase() === uname.toLowerCase());
+      if (!targetAcc) return;
+
+      if (!canCurrentUserModifyAccount(targetAcc)) {
+        showToast('Access Denied: Abdulrahman Mufti\'s account can only be modified by him.');
+        return;
+      }
+
+      document.getElementById('pw-target-username').value = targetAcc.username;
+      document.getElementById('pw-target-display').textContent = `${targetAcc.name} (${targetAcc.username})`;
+      document.getElementById('pw-current-input').value = '';
+      document.getElementById('pw-new-input').value = '';
+      document.getElementById('pw-confirm-input').value = '';
+      document.getElementById('pw-error-box').classList.add('hidden');
+
+      const isSelf = state.currentUser.username.toLowerCase() === targetAcc.username.toLowerCase();
+      document.getElementById('pw-current-wrap').style.display = isSelf ? 'block' : 'none';
+      document.getElementById('pw-current-input').required = isSelf;
+
+      document.getElementById('password-reset-modal').classList.remove('hidden');
+    };
+
+    window.closePasswordResetModal = function() {
+      document.getElementById('password-reset-modal').classList.add('hidden');
+    };
+
+    window.handlePasswordResetSubmit = async function(e) {
+      e.preventDefault();
+      const targetUname = document.getElementById('pw-target-username').value;
+      const currPass = document.getElementById('pw-current-input').value.trim();
+      const newPass = document.getElementById('pw-new-input').value.trim();
+      const confPass = document.getElementById('pw-confirm-input').value.trim();
+      const errBox = document.getElementById('pw-error-box');
+
+      const targetAcc = state.users.find(u => u.username.toLowerCase() === targetUname.toLowerCase());
+      if (!targetAcc || !canCurrentUserModifyAccount(targetAcc)) {
+        errBox.textContent = 'Unauthorized password reset attempt.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      const isSelf = state.currentUser.username.toLowerCase() === targetAcc.username.toLowerCase();
+      if (isSelf && targetAcc.password !== currPass) {
+        errBox.textContent = 'Current password is incorrect.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        errBox.textContent = 'New password must be at least 4 characters.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass !== confPass) {
+        errBox.textContent = 'New password and confirmation do not match.';
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      targetAcc.password = newPass;
+      if (isSelf) state.currentUser.password = newPass;
+
+      closePasswordResetModal();
+      refreshAllViews();
+      await persistState();
+      showToast(`Password updated successfully for ${targetAcc.name}`);
+    };
+
     window.toggleLanguage = function() {
       state.lang = state.lang === 'en' ? 'ar' : 'en';
       const root = document.getElementById('html-root');
       root.setAttribute('lang', state.lang);
       root.setAttribute('dir', state.lang === 'ar' ? 'rtl' : 'ltr');
 
-      document.getElementById('login-lang-btn').textContent = state.lang === 'ar' ? 'English' : 'العربية';
       document.getElementById('header-lang-btn').textContent = state.lang === 'ar' ? 'English' : 'العربية';
 
       const dict = I18N[state.lang];
@@ -1452,7 +1991,6 @@
       refreshAllViews();
     };
 
-    // ================= 9. DASHBOARD KPIs, LAB SELECTOR & INVENTORY TABLE =================
     function refreshAllViews() {
       updateKpis();
       renderLabSelectorCards();
@@ -1471,14 +2009,14 @@
       const totalSystems = filteredByLab.length;
       const totalSubs = filteredByLab.reduce((acc, item) => acc + (item.subs ? item.subs.length : 0), 0);
       const operationalCount = filteredByLab.filter(i => i.status === 'Operational').length;
-      const maintCount = filteredByLab.filter(i => i.status === 'Maintenance' || i.status === 'Calibration Due').length;
       const faultCount = filteredByLab.filter(i => i.status === 'Contingency / Fault').length;
+      const unavailCount = filteredByLab.filter(i => i.status === 'Not Available').length;
 
       document.getElementById('kpi-total').textContent = totalSystems;
       document.getElementById('kpi-subs').textContent = totalSubs;
       document.getElementById('kpi-operational').textContent = operationalCount;
-      document.getElementById('kpi-maint').textContent = maintCount;
       document.getElementById('kpi-fault').textContent = faultCount;
+      document.getElementById('kpi-unavailable').textContent = unavailCount;
       document.getElementById('kpi-labs').textContent = state.labs.length;
 
       document.getElementById('badge-tab-inv').textContent = totalSystems;
@@ -1543,6 +2081,53 @@
       refreshAllViews();
     };
 
+    // ================= AUTO-DOWNLOAD BACKUP BEFORE RESETTING EQUIPMENT STATUS =================
+    window.resetEquipmentStatus = async function(itemId) {
+      if (!state.currentUser?.perms?.logIssue && !state.currentUser?.perms?.editEq) {
+        showToast('Permission required to reset equipment status');
+        return;
+      }
+      const item = state.inventory.find(i => i.id === itemId);
+      if (!item) return;
+
+      // Automatically download all current Inventory & Contingency Log data before resetting
+      const dateStamp = new Date().toISOString().slice(0, 10);
+      exportProExcel(`KSAU_HS_RT_PreReset_Backup_${item.lab}_SN${item.sn}_${dateStamp}.xlsx`);
+
+      item.status = 'Operational';
+      state.logs = state.logs.filter(l => l.deviceId !== item.id && l.htms !== item.htms);
+
+      refreshAllViews();
+      await persistState();
+      showToast(`Excel backup downloaded & ${item.desc} (HTMS #${item.htms}) reset to Operational`);
+    };
+
+    window.resetAllEquipmentStatuses = async function() {
+      if (!state.currentUser?.perms?.logIssue && !state.currentUser?.perms?.editEq) {
+        showToast('Permission required to reset equipment statuses');
+        return;
+      }
+
+      const nonOpCount = state.inventory.filter(i => i.status !== 'Operational').length;
+      if (nonOpCount === 0 && state.logs.length === 0) {
+        showToast('All 50 equipment systems are already Operational and Contingency Log is clear');
+        return;
+      }
+
+      // Automatically download complete Excel backup (Inventory + Contingency Logs) BEFORE resetting
+      const dateStamp = new Date().toISOString().slice(0, 10);
+      exportProExcel(`KSAU_HS_RT_Full_Backup_Before_Reset_${dateStamp}.xlsx`);
+
+      state.inventory.forEach(item => {
+        item.status = 'Operational';
+      });
+      state.logs = [];
+
+      refreshAllViews();
+      await persistState();
+      showToast('Pre-reset Excel backup downloaded! All devices set to Operational & Contingency Logs cleared.');
+    };
+
     window.toggleExpandAllSubs = function() {
       state.expandAll = !state.expandAll;
       state.inventory.forEach(item => {
@@ -1565,13 +2150,10 @@
       if (status === 'Operational') {
         return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>${state.lang === 'ar' ? 'يعمل بكفاءة' : 'Operational'}</span>`;
       }
-      if (status === 'Maintenance') {
-        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>${state.lang === 'ar' ? 'تحت الصيانة' : 'Maintenance'}</span>`;
+      if (status === 'Contingency / Fault') {
+        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>${state.lang === 'ar' ? 'طوارئ / عطل' : 'Contingency / Fault'}</span>`;
       }
-      if (status === 'Calibration Due') {
-        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>${state.lang === 'ar' ? 'مستحق للمعايرة' : 'Calibration Due'}</span>`;
-      }
-      return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>${state.lang === 'ar' ? 'طوارئ / عطل' : 'Contingency / Fault'}</span>`;
+      return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>${state.lang === 'ar' ? 'غير متاح' : 'Not Available'}</span>`;
     }
 
     function getFilteredInventory() {
@@ -1585,10 +2167,10 @@
         if (mfg !== 'ALL' && item.mfg !== mfg) return false;
         if (!q) return true;
 
-        const matchMain = [item.lab, String(item.sn), item.desc, item.htms, item.ku, item.model, item.mfg, item.serial]
+        const matchMain = [item.lab, String(item.sn), item.desc, item.htms, item.ku, item.model, item.mfg]
           .some(v => (v || '').toLowerCase().includes(q));
         const matchSub = (item.subs || []).some(s =>
-          [s.desc, s.ku, s.model, s.mfg, s.serial].some(v => (v || '').toLowerCase().includes(q))
+          [s.desc, s.ku, s.model, s.mfg].some(v => (v || '').toLowerCase().includes(q))
         );
         return matchMain || matchSub;
       });
@@ -1601,13 +2183,7 @@
       const canLog = state.currentUser?.perms?.logIssue;
 
       if (items.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="9" class="py-12 text-center text-slate-400 font-semibold">
-              No matching medical equipment records found.
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-400 font-semibold">No matching medical equipment records found.</td></tr>`;
         return;
       }
 
@@ -1615,6 +2191,7 @@
       items.forEach(item => {
         const hasSubs = item.subs && item.subs.length > 0;
         const isExpanded = !!state.expandedRows[item.id];
+        const isNonOperational = item.status !== 'Operational';
 
         html += `
           <tr class="hover:bg-slate-50/90 transition">
@@ -1635,10 +2212,15 @@
             <td class="py-3.5 px-4 font-mono text-slate-700">${item.ku}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-700">${item.model}</td>
             <td class="py-3.5 px-4 text-slate-600">${item.mfg}</td>
-            <td class="py-3.5 px-4 font-mono text-slate-700">${item.serial}</td>
             <td class="py-3.5 px-4 whitespace-nowrap">${statusBadgeHtml(item.status)}</td>
             <td class="py-3.5 px-4 text-right rtl:text-left whitespace-nowrap">
               <div class="inline-flex items-center gap-1.5">
+                ${isNonOperational && (canLog || canEdit) ? `
+                  <button onclick="resetEquipmentStatus('${item.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition flex items-center gap-1 shadow-sm" title="Download Backup & Reset Status">
+                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                    <span>Reset Status</span>
+                  </button>
+                ` : ''}
                 ${canLog ? `
                   <button onclick="openContingencyModal('${item.id}')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold transition">
                     Log Issue
@@ -1657,11 +2239,9 @@
         if (hasSubs && isExpanded) {
           html += `
             <tr class="bg-indigo-50/40">
-              <td colspan="9" class="px-6 py-3">
+              <td colspan="8" class="px-6 py-3">
                 <div class="rounded-xl bg-white border border-indigo-200/80 p-3 shadow-inner">
-                  <p class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 mb-2">
-                    Attached Sub-Components for ${item.desc} (HTMS #${item.htms})
-                  </p>
+                  <p class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700 mb-2">Attached Sub-Components for ${item.desc} (HTMS #${item.htms})</p>
                   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                     ${item.subs.map((sub, idx) => `
                       <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-[11px]">
@@ -1669,9 +2249,7 @@
                           <span class="font-bold text-slate-900">${idx + 1}. ${sub.desc}</span>
                           <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold">KU: ${sub.ku}</span>
                         </div>
-                        <div class="mt-1 text-slate-600 font-mono text-[10px]">
-                          Model: <strong>${sub.model}</strong> • SN: <strong>${sub.serial}</strong>
-                        </div>
+                        <div class="mt-1 text-slate-600 font-mono text-[10px]">Model: <strong>${sub.model}</strong> • Mfg: <strong>${sub.mfg || item.mfg}</strong></div>
                       </div>
                     `).join('')}
                   </div>
@@ -1686,10 +2264,9 @@
       lucide.createIcons();
     };
 
-    // ================= 10. TAB SWITCHING, CONTINGENCY LOGS & STAFF ACCOUNTS =================
     window.switchMainTab = function(tab) {
       state.activeTab = tab;
-      ['inventory', 'contingency', 'staff'].forEach(t => {
+      ['inventory', 'contingency', 'createuser', 'staff'].forEach(t => {
         document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`tab-btn-${t}`);
         if (t === tab) {
@@ -1707,62 +2284,216 @@
         container.innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-slate-400 font-bold">No contingency logs recorded.</div>`;
         return;
       }
-      container.innerHTML = state.logs.map(log => `
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div class="space-y-1.5 max-w-3xl">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold">${log.id}</span>
-              <span class="px-2 py-0.5 rounded bg-ksau-50 text-ksau-800 border border-ksau-200 font-mono text-[10px] font-bold">${log.lab}</span>
-              <span class="text-xs font-mono font-bold text-slate-600">HTMS #${log.htms} • KU #${log.ku}</span>
-              ${statusBadgeHtml(log.status)}
+      const canReset = state.currentUser?.perms?.logIssue || state.currentUser?.perms?.editEq;
+
+      container.innerHTML = state.logs.map(log => {
+        const linkedItem = state.inventory.find(i => i.id === log.deviceId);
+        const showQuickReset = linkedItem && linkedItem.status !== 'Operational' && canReset;
+        return `
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="space-y-1.5 max-w-3xl">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-slate-900 text-white font-mono text-[10px] font-bold">${log.id}</span>
+                <span class="px-2 py-0.5 rounded bg-ksau-50 text-ksau-800 border border-ksau-200 font-mono text-[10px] font-bold">${log.lab}</span>
+                <span class="text-xs font-mono font-bold text-slate-600">HTMS #${log.htms} • KU #${log.ku}</span>
+                ${statusBadgeHtml(log.status)}
+                ${showQuickReset ? `
+                  <button onclick="resetEquipmentStatus('${linkedItem.id}')" class="px-2.5 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-extrabold transition flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                    <span>Reset Device to Operational</span>
+                  </button>
+                ` : ''}
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900">${log.deviceName}</h3>
+              <p class="text-xs text-slate-700"><strong>Observation:</strong> ${log.issue}</p>
+              <p class="text-xs text-ksau-800 bg-ksau-50/70 px-3 py-1.5 rounded-lg border border-ksau-200/70"><strong>Action Plan:</strong> ${log.action}</p>
             </div>
-            <h3 class="text-sm font-extrabold text-slate-900">${log.deviceName}</h3>
-            <p class="text-xs text-slate-700"><strong>Observation:</strong> ${log.issue}</p>
-            <p class="text-xs text-ksau-800 bg-ksau-50/70 px-3 py-1.5 rounded-lg border border-ksau-200/70"><strong>Action Plan:</strong> ${log.action}</p>
+            <div class="text-left md:text-right rtl:text-left shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-slate-100 w-full md:w-auto">
+              <p class="text-xs font-extrabold text-slate-900">${log.specialist || 'Abdulrahman Mufti, RT Specialist'}</p>
+              <p class="text-[11px] font-mono text-ksau-700">${log.contact || 'muftiab@ksau-hs.edu.sa'}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${log.timestamp}</p>
+            </div>
           </div>
-          <div class="text-left md:text-right rtl:text-left shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-slate-100 w-full md:w-auto">
-            <p class="text-xs font-bold text-slate-900">${log.engineer}</p>
-            <p class="text-[11px] font-mono text-slate-500">Badge #${log.badge}</p>
-            <p class="text-[10px] text-slate-400 mt-0.5">${log.timestamp}</p>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+      lucide.createIcons();
     }
 
     function renderStaffAccounts() {
       const grid = document.getElementById('staff-grid');
-      const canManage = state.currentUser?.perms?.manageUsers;
-      grid.innerHTML = state.users.map((u, idx) => `
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-4">
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl bg-ksau-700 text-white font-extrabold text-sm flex items-center justify-center">
-                ${u.name.split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase()}
+      grid.innerHTML = state.users.map((u, idx) => {
+        const isMasterAcc = !!(u.isMaster || u.username.toLowerCase() === 'amufti');
+        const canModifyThis = canCurrentUserModifyAccount(u);
+        const canDeleteThis = !isMasterAcc && state.currentUser?.perms?.manageUsers;
+
+        return `
+          <div class="bg-white rounded-2xl p-5 border ${isMasterAcc ? 'border-ksau-600 ring-1 ring-ksau-600/20' : 'border-slate-200/80'} shadow-sm flex flex-col justify-between space-y-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl ${isMasterAcc ? 'bg-ksau-800 text-ksau-goldlight' : 'bg-ksau-600 text-white'} font-extrabold text-sm flex items-center justify-center shadow">
+                  ${u.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <h4 class="text-sm font-extrabold text-slate-900">${u.name}</h4>
+                    ${isMasterAcc ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">Master RT Specialist</span>` : ''}
+                  </div>
+                  <p class="text-xs text-ksau-700 font-bold">${u.role}</p>
+                  <p class="text-[11px] font-mono text-slate-500">Username: <strong>${u.username}</strong></p>
+                  ${u.email ? `<p class="text-[11px] font-mono text-slate-500">${u.email}</p>` : ''}
+                </div>
               </div>
-              <div>
-                <h4 class="text-sm font-extrabold text-slate-900">${u.name}</h4>
-                <p class="text-xs text-ksau-700 font-semibold">${u.role}</p>
-                <p class="text-[11px] font-mono text-slate-500">Badge #${u.badge} • User: <strong>${u.username}</strong></p>
-              </div>
+              ${canDeleteThis ? `
+                <button onclick="deleteStaffAccount(${idx})" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600" title="Remove Account">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
             </div>
-            ${canManage && u.username !== 'admin' ? `
-              <button onclick="deleteStaffAccount(${idx})" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600" title="Remove Account">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            ` : ''}
+
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.editEq ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Edit Equipment: ${u.perms.editEq ? 'Yes' : 'No'}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.logIssue ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Contingency & Reset: ${u.perms.logIssue ? 'Yes' : 'No'}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.manageLabs ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Create Labs: ${u.perms.manageLabs ? 'Yes' : 'No'}</span>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.manageUsers ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Manage Staff: ${u.perms.manageUsers ? 'Yes' : 'No'}</span>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+              ${canModifyThis ? `
+                <button onclick="openEditStaffModal('${u.username}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                  <i data-lucide="user-pen" class="w-3.5 h-3.5"></i>
+                  <span>Edit Profile</span>
+                </button>
+                <button onclick="openPasswordResetModal('${u.username}')" class="flex-1 py-2 px-3 rounded-xl bg-ksau-50 hover:bg-ksau-100 text-ksau-800 border border-ksau-200 text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                  <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+                  <span>Reset Password</span>
+                </button>
+              ` : `
+                <div class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-400 font-semibold flex items-center justify-center gap-1.5">
+                  <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                  <span>Protected — Editable Only by Abdulrahman Mufti</span>
+                </div>
+              `}
+            </div>
           </div>
-          <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.editEq ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Edit Equipment: ${u.perms.editEq ? 'Yes' : 'No'}</span>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.logIssue ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Log Issues: ${u.perms.logIssue ? 'Yes' : 'No'}</span>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.manageLabs ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Create Labs: ${u.perms.manageLabs ? 'Yes' : 'No'}</span>
-            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms.manageUsers ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Manage Staff: ${u.perms.manageUsers ? 'Yes' : 'No'}</span>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
       lucide.createIcons();
     }
 
-    // ================= 11. MODALS: EQUIPMENT, CONTINGENCY, LABS, STAFF =================
+    window.saveStaffFromPage = async function(e) {
+      e.preventDefault();
+      if (!state.currentUser?.perms?.manageUsers) {
+        showToast('Permission denied');
+        return;
+      }
+      const uname = document.getElementById('page-staff-user').value.trim();
+      if (state.users.some(u => u.username.toLowerCase() === uname.toLowerCase())) {
+        showToast('Username already exists. Please choose a different username.');
+        return;
+      }
+
+      const newAcc = {
+        name: document.getElementById('page-staff-name').value.trim(),
+        role: document.getElementById('page-staff-role').value.trim(),
+        email: document.getElementById('page-staff-email').value.trim(),
+        phone: document.getElementById('page-staff-phone').value.trim() || '0114299999 ext. 98317',
+        username: uname,
+        password: document.getElementById('page-staff-pass').value.trim(),
+        isMaster: false,
+        perms: {
+          editEq: document.getElementById('page-perm-edit-eq').checked,
+          logIssue: document.getElementById('page-perm-log').checked,
+          manageLabs: document.getElementById('page-perm-labs').checked,
+          manageUsers: document.getElementById('page-perm-users').checked
+        }
+      };
+
+      state.users.push(newAcc);
+      document.getElementById('page-create-user-form').reset();
+      refreshAllViews();
+      await persistState();
+      showToast(`Staff account created for ${newAcc.name}`);
+      switchMainTab('staff');
+    };
+
+    window.openEditStaffModal = function(username) {
+      const target = state.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!target) return;
+      if (!canCurrentUserModifyAccount(target)) {
+        showToast('Access Denied: Abdulrahman Mufti\'s profile is editable only by him.');
+        return;
+      }
+
+      document.getElementById('edit-staff-orig-user').value = target.username;
+      document.getElementById('edit-staff-name').value = target.name;
+      document.getElementById('edit-staff-role').value = target.role;
+      document.getElementById('edit-staff-email').value = target.email || '';
+      document.getElementById('edit-staff-phone').value = target.phone || '';
+      document.getElementById('edit-staff-user').value = target.username;
+
+      document.getElementById('edit-perm-eq').checked = !!target.perms.editEq;
+      document.getElementById('edit-perm-log').checked = !!target.perms.logIssue;
+      document.getElementById('edit-perm-labs').checked = !!target.perms.manageLabs;
+      document.getElementById('edit-perm-users').checked = !!target.perms.manageUsers;
+
+      const permsBox = document.getElementById('edit-staff-perms-box');
+      if (target.isMaster) {
+        permsBox.classList.add('opacity-60', 'pointer-events-none');
+      } else {
+        permsBox.classList.remove('opacity-60', 'pointer-events-none');
+      }
+
+      document.getElementById('edit-staff-modal').classList.remove('hidden');
+    };
+
+    window.closeEditStaffModal = function() {
+      document.getElementById('edit-staff-modal').classList.add('hidden');
+    };
+
+    window.saveEditedStaffProfile = async function(e) {
+      e.preventDefault();
+      const origUser = document.getElementById('edit-staff-orig-user').value;
+      const target = state.users.find(u => u.username.toLowerCase() === origUser.toLowerCase());
+      if (!target || !canCurrentUserModifyAccount(target)) return;
+
+      target.name = document.getElementById('edit-staff-name').value.trim();
+      target.role = document.getElementById('edit-staff-role').value.trim();
+      target.email = document.getElementById('edit-staff-email').value.trim();
+      target.phone = document.getElementById('edit-staff-phone').value.trim();
+      target.username = document.getElementById('edit-staff-user').value.trim();
+
+      if (!target.isMaster) {
+        target.perms = {
+          editEq: document.getElementById('edit-perm-eq').checked,
+          logIssue: document.getElementById('edit-perm-log').checked,
+          manageLabs: document.getElementById('edit-perm-labs').checked,
+          manageUsers: document.getElementById('edit-perm-users').checked
+        };
+      }
+
+      if (state.currentUser.username.toLowerCase() === origUser.toLowerCase()) {
+        state.currentUser = target;
+        updateUserHeaderUI();
+      }
+
+      closeEditStaffModal();
+      refreshAllViews();
+      await persistState();
+      showToast(`Profile updated for ${target.name}`);
+    };
+
+    window.deleteStaffAccount = async function(idx) {
+      const target = state.users[idx];
+      if (!target || target.isMaster || target.username.toLowerCase() === 'amufti') {
+        showToast('Master account cannot be deleted.');
+        return;
+      }
+      state.users.splice(idx, 1);
+      refreshAllViews();
+      await persistState();
+      showToast('Staff account removed');
+    };
+
     window.openEquipmentModal = function(editId = null) {
       const labSelect = document.getElementById('eq-lab');
       labSelect.innerHTML = state.labs.map(l => `<option value="${l.code}">${l.code} — ${l.name}</option>`).join('');
@@ -1781,7 +2512,6 @@
         document.getElementById('eq-htms').value = item.htms;
         document.getElementById('eq-ku').value = item.ku;
         document.getElementById('eq-model').value = item.model;
-        document.getElementById('eq-serial').value = item.serial;
         document.getElementById('eq-mfg').value = item.mfg;
         (item.subs || []).forEach(s => addSubComponentField(s));
       } else {
@@ -1796,15 +2526,14 @@
       document.getElementById('equipment-modal').classList.add('hidden');
     };
 
-    window.addSubComponentField = function(sub = { desc: '', ku: 'NA', model: 'NA', mfg: '', serial: 'NA' }) {
+    window.addSubComponentField = function(sub = { desc: '', ku: 'NA', model: 'NA', mfg: '' }) {
       const container = document.getElementById('eq-subs-container');
       const div = document.createElement('div');
-      div.className = 'grid grid-cols-1 sm:grid-cols-5 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 items-center sub-item-row';
+      div.className = 'grid grid-cols-1 sm:grid-cols-4 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-200 items-center sub-item-row';
       div.innerHTML = `
         <input type="text" placeholder="Sub-component name" value="${sub.desc}" class="sub-desc px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs" required />
         <input type="text" placeholder="KU No." value="${sub.ku}" class="sub-ku px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono" />
         <input type="text" placeholder="Model" value="${sub.model}" class="sub-model px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs" />
-        <input type="text" placeholder="Serial No." value="${sub.serial}" class="sub-serial px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono" />
         <button type="button" onclick="this.parentElement.remove()" class="px-2 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-bold">Remove</button>
       `;
       container.appendChild(div);
@@ -1818,8 +2547,7 @@
         desc: row.querySelector('.sub-desc').value.trim(),
         ku: row.querySelector('.sub-ku').value.trim() || 'NA',
         model: row.querySelector('.sub-model').value.trim() || 'NA',
-        mfg: mfgVal,
-        serial: row.querySelector('.sub-serial').value.trim() || 'NA'
+        mfg: mfgVal
       }));
 
       const record = {
@@ -1831,7 +2559,6 @@
         htms: document.getElementById('eq-htms').value.trim(),
         ku: document.getElementById('eq-ku').value.trim(),
         model: document.getElementById('eq-model').value.trim(),
-        serial: document.getElementById('eq-serial').value.trim(),
         mfg: mfgVal,
         subs
       };
@@ -1846,7 +2573,7 @@
       closeEquipmentModal();
       refreshAllViews();
       await persistState();
-      showToast('Medical equipment record saved to Firestore');
+      showToast('Medical equipment record saved');
     };
 
     window.openContingencyModal = function(preselectId = null) {
@@ -1883,8 +2610,8 @@
         status: newStatus,
         issue,
         action,
-        engineer: state.currentUser.name,
-        badge: state.currentUser.badge,
+        specialist: `${state.currentUser.name}, ${state.currentUser.role}`,
+        contact: state.currentUser.email || 'muftiab@ksau-hs.edu.sa',
         timestamp: new Date().toLocaleString()
       });
 
@@ -1912,46 +2639,9 @@
       closeLabModal();
       refreshAllViews();
       await persistState();
-      showToast(`Laboratory ${code} created & synced`);
+      showToast(`Laboratory ${code} created`);
     };
 
-    window.openStaffModal = function() {
-      document.getElementById('staff-modal').classList.remove('hidden');
-    };
-    window.closeStaffModal = function() {
-      document.getElementById('staff-modal').classList.add('hidden');
-    };
-    window.saveStaffAccount = async function(e) {
-      e.preventDefault();
-      const newAcc = {
-        name: document.getElementById('staff-name').value.trim(),
-        badge: document.getElementById('staff-badge').value.trim(),
-        username: document.getElementById('staff-user').value.trim(),
-        password: document.getElementById('staff-pass').value.trim(),
-        role: document.getElementById('staff-role').value.trim(),
-        perms: {
-          editEq: document.getElementById('perm-edit-eq').checked,
-          logIssue: document.getElementById('perm-log').checked,
-          manageLabs: document.getElementById('perm-labs').checked,
-          manageUsers: document.getElementById('perm-users').checked
-        }
-      };
-      state.users.push(newAcc);
-      closeStaffModal();
-      refreshAllViews();
-      await persistState();
-      showToast(`Staff credentials created for ${newAcc.name}`);
-    };
-
-    window.deleteStaffAccount = async function(idx) {
-      if (state.users[idx]?.username === 'admin') return;
-      state.users.splice(idx, 1);
-      refreshAllViews();
-      await persistState();
-      showToast('Staff account removed');
-    };
-
-    // ================= 12. OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR =================
     window.openReportModal = function() {
       const sel = document.getElementById('report-lab-select');
       sel.innerHTML = `<option value="ALL">All Labs (${state.labs.map(l => l.code).join(' & ')})</option>` +
@@ -1970,10 +2660,11 @@
     window.renderPrintableReportContent = function() {
       const labFilter = document.getElementById('report-lab-select').value;
       const items = labFilter === 'ALL' ? state.inventory : state.inventory.filter(i => i.lab === labFilter);
+      const logs = labFilter === 'ALL' ? state.logs : state.logs.filter(l => l.lab === labFilter || l.lab === 'ALL LABS');
       const totalSubs = items.reduce((s, x) => s + (x.subs?.length || 0), 0);
 
       document.getElementById('report-lab-meta').textContent =
-        `Lab Scope: ${labFilter === 'ALL' ? 'CM-01-158 & CM-01-162 (All Labs)' : labFilter} • Parent Systems: ${items.length} • Sub-Components: ${totalSubs}`;
+        `Lab Scope: ${labFilter === 'ALL' ? 'CM-01-158 & CM-01-162 (All Labs)' : labFilter} • Parent Systems: ${items.length} • Sub-Components: ${totalSubs} • Contingency Logs: ${logs.length}`;
 
       let rowsHtml = '';
       items.forEach(item => {
@@ -1985,7 +2676,6 @@
             <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${item.ku}</td>
             <td class="py-1.5 px-2 border-r border-slate-300">${item.model}</td>
             <td class="py-1.5 px-2 border-r border-slate-300">${item.mfg}</td>
-            <td class="py-1.5 px-2 font-mono border-r border-slate-300">${item.serial}</td>
             <td class="py-1.5 px-2 font-bold text-center">${item.status}</td>
           </tr>
         `;
@@ -1998,7 +2688,6 @@
               <td class="py-1 px-2 text-center font-mono border-r border-slate-300">${sub.ku}</td>
               <td class="py-1 px-2 border-r border-slate-300">${sub.model}</td>
               <td class="py-1 px-2 border-r border-slate-300">${sub.mfg || item.mfg}</td>
-              <td class="py-1 px-2 font-mono border-r border-slate-300">${sub.serial}</td>
               <td class="py-1 px-2 text-center text-[10px]">Attached</td>
             </tr>
           `;
@@ -2015,11 +2704,48 @@
               <th class="py-2 px-2 border border-slate-400">KU No.</th>
               <th class="py-2 px-2 border border-slate-400 text-left">Model</th>
               <th class="py-2 px-2 border border-slate-400 text-left">Manufacturer</th>
-              <th class="py-2 px-2 border border-slate-400 text-left">Serial No.</th>
               <th class="py-2 px-2 border border-slate-400">Status</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+
+      let logRowsHtml = '';
+      if (logs.length === 0) {
+        logRowsHtml = `<tr><td colspan="8" class="py-3 text-center text-slate-500">No contingency issues recorded for this scope.</td></tr>`;
+      } else {
+        logs.forEach(l => {
+          logRowsHtml += `
+            <tr class="border-b border-slate-300 bg-white">
+              <td class="py-1.5 px-2 font-mono font-bold text-center border-r border-slate-300">${l.id}</td>
+              <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${l.lab}</td>
+              <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">HTMS: ${l.htms}<br/>KU: ${l.ku}</td>
+              <td class="py-1.5 px-2 font-bold border-r border-slate-300">${l.deviceName}</td>
+              <td class="py-1.5 px-2 font-bold text-center border-r border-slate-300">${l.status}</td>
+              <td class="py-1.5 px-2 border-r border-slate-300">${l.issue}</td>
+              <td class="py-1.5 px-2 border-r border-slate-300">${l.action}</td>
+              <td class="py-1.5 px-2 text-center">${l.specialist || 'Abdulrahman Mufti, RT Specialist'}<br/><span class="text-[10px] text-slate-500">${l.timestamp}</span></td>
+            </tr>
+          `;
+        });
+      }
+
+      document.getElementById('report-contingency-container').innerHTML = `
+        <table class="w-full text-[11px] border border-slate-400 border-collapse">
+          <thead>
+            <tr class="bg-amber-800 text-white uppercase">
+              <th class="py-2 px-2 border border-slate-400">Log ID</th>
+              <th class="py-2 px-2 border border-slate-400">Lab</th>
+              <th class="py-2 px-2 border border-slate-400">HTMS / KU</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Medical Device</th>
+              <th class="py-2 px-2 border border-slate-400">Status</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Observation / Fault</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Contingency Action Plan</th>
+              <th class="py-2 px-2 border border-slate-400">Logged By</th>
+            </tr>
+          </thead>
+          <tbody>${logRowsHtml}</tbody>
         </table>
       `;
     };
@@ -2030,7 +2756,7 @@
       showToast('Generating Official KSAU-HS A4 PDF...');
       const opt = {
         margin: [8, 8, 8, 8],
-        filename: `KSAU_HS_HTMS_Inventory_Report_${labFilter}.pdf`,
+        filename: `KSAU_HS_RT_Inventory_And_Contingency_Report_${labFilter}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -2043,14 +2769,7 @@
       window.print();
     };
 
-    // ================= 13. QR CODE MOBILE & DESKTOP ACCESS GENERATOR =================
     window.openQrModal = function() {
-      const urlInput = document.getElementById('qr-url-input');
-      if (!urlInput.value) {
-        urlInput.value = window.location.href.startsWith('blob:')
-          ? 'https://ksau-hs.edu.sa/htms-inventory-portal'
-          : window.location.href;
-      }
       renderAllLogos();
       regenerateQrCode();
       document.getElementById('qr-modal').classList.remove('hidden');
@@ -2062,10 +2781,13 @@
 
     window.regenerateQrCode = function() {
       const box = document.getElementById('qrcode-box');
+      if (!box) return;
       box.innerHTML = '';
-      const val = document.getElementById('qr-url-input').value.trim() || 'https://ksau-hs.edu.sa';
+      const portalUrl = window.location.href.startsWith('blob:')
+        ? 'https://fawazjw32.github.io/ksau-hs-htms/'
+        : window.location.href.split('?')[0];
       new QRCode(box, {
-        text: val,
+        text: portalUrl,
         width: 170,
         height: 170,
         colorDark: '#052916',
@@ -2074,18 +2796,11 @@
       });
     };
 
-    window.copyQrUrl = function() {
-      const inp = document.getElementById('qr-url-input');
-      inp.select();
-      document.execCommand('copy');
-      showToast('Portal link copied to clipboard');
-    };
-
     window.downloadQrDoorCard = async function() {
       const card = document.getElementById('qr-poster-card');
       await html2pdf().set({
         margin: 15,
-        filename: 'KSAU_HS_HTMS_Lab_Door_QR_Poster.pdf',
+        filename: 'KSAU_HS_RT_Lab_Door_QR_Poster.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -2093,17 +2808,16 @@
       showToast('Lab Door QR Card PDF downloaded');
     };
 
-    // ================= 14. PRO MULTI-SHEET EXCEL (.XLSX) EXPORT (NO SCIENTIFIC NOTATION) =================
-    window.exportProExcel = function() {
+    window.exportProExcel = function(customFilename = null) {
       const wb = XLSX.utils.book_new();
 
       function buildStyledSheet(items, sheetTitle) {
         const rows = [
           ['KING SAUD BIN ABDULAZIZ UNIVERSITY FOR HEALTH SCIENCES (KSAU-HS)'],
-          ['HEALTHCARE TECHNOLOGY MANAGEMENT SERVICES (HTMS) — CENTRAL REGION'],
+          ['RESPIRATORY THERAPY SKILLS LABS — CENTRAL REGION (Abdulrahman Mufti, RT Specialist • muftiab@ksau-hs.edu.sa)'],
           [`MEDICAL EQUIPMENT INVENTORY — ${sheetTitle} (College of Applied Medical Sciences - Male)`],
           [],
-          ['Lab Number', 'SN', 'Record Type', 'Description', 'HTMS No.', 'KU No.', 'Model', 'Manufacturer', 'Serial No.', 'Operational Status']
+          ['Lab Number', 'SN', 'Record Type', 'Description', 'HTMS No.', 'KU No.', 'Model', 'Manufacturer', 'Operational Status']
         ];
 
         items.forEach(item => {
@@ -2116,7 +2830,6 @@
             String(item.ku),
             String(item.model),
             String(item.mfg),
-            String(item.serial),
             String(item.status)
           ]);
           (item.subs || []).forEach(sub => {
@@ -2129,7 +2842,6 @@
               String(sub.ku),
               String(sub.model),
               String(sub.mfg || item.mfg),
-              String(sub.serial),
               'Attached'
             ]);
           });
@@ -2137,12 +2849,10 @@
 
         const ws = XLSX.utils.aoa_to_sheet(rows);
         ws['!cols'] = [
-          { wch: 15 }, { wch: 10 }, { wch: 16 }, { wch: 46 },
-          { wch: 16 }, { wch: 16 }, { wch: 24 }, { wch: 28 },
-          { wch: 24 }, { wch: 20 }
+          { wch: 15 }, { wch: 10 }, { wch: 16 }, { wch: 48 },
+          { wch: 16 }, { wch: 16 }, { wch: 24 }, { wch: 30 }, { wch: 22 }
         ];
 
-        // Force explicit String/Text format ('@') on every single cell so Serial Numbers never become 2.012E+10
         const range = XLSX.utils.decode_range(ws['!ref']);
         for (let R = range.s.r; R <= range.e.r; ++R) {
           for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -2182,21 +2892,23 @@
         XLSX.utils.book_append_sheet(wb, buildStyledSheet(labItems, `LAB ${lab.code}`), `Lab ${lab.code}`);
       });
 
-      // Contingency Log Sheet
       const logRows = [
-        ['KSAU-HS HTMS CONTINGENCY & CORRECTIVE MAINTENANCE LOGBOOK'],
+        ['KSAU-HS RESPIRATORY THERAPY SKILLS LAB CONTINGENCY LOGBOOK'],
+        ['Supervisor: Abdulrahman Mufti, RT Specialist • muftiab@ksau-hs.edu.sa • Phone: 0114299999 ext. 98317'],
         [],
-        ['Log ID', 'Lab', 'HTMS No.', 'KU No.', 'Device Description', 'Status', 'Observation', 'Contingency Action Plan', 'HTMS Engineer', 'Badge No.', 'Timestamp']
+        ['Log ID', 'Lab', 'HTMS No.', 'KU No.', 'Device Description', 'Status', 'Observation', 'Contingency Action Plan', 'Logged By', 'Contact', 'Timestamp']
       ];
       state.logs.forEach(l => {
-        logRows.push([l.id, l.lab, String(l.htms), String(l.ku), l.deviceName, l.status, l.issue, l.action, l.engineer, String(l.badge), l.timestamp]);
+        logRows.push([l.id, l.lab, String(l.htms), String(l.ku), l.deviceName, l.status, l.issue, l.action, l.specialist || 'Abdulrahman Mufti, RT Specialist', l.contact || 'muftiab@ksau-hs.edu.sa', l.timestamp]);
       });
       const wsLogs = XLSX.utils.aoa_to_sheet(logRows);
-      wsLogs['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 36 }, { wch: 18 }, { wch: 42 }, { wch: 42 }, { wch: 26 }, { wch: 12 }, { wch: 22 }];
+      wsLogs['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 38 }, { wch: 20 }, { wch: 42 }, { wch: 42 }, { wch: 30 }, { wch: 24 }, { wch: 22 }];
       XLSX.utils.book_append_sheet(wb, wsLogs, 'Contingency Logs');
 
-      XLSX.writeFile(wb, 'KSAU_HS_HTMS_Official_Inventory_Workbook.xlsx');
-      showToast('Formatted Multi-Sheet Excel (.xlsx) exported');
+      const outName = (typeof customFilename === 'string' && customFilename)
+        ? customFilename
+        : 'KSAU_HS_RT_Inventory_And_Contingency_Workbook.xlsx';
+      XLSX.writeFile(wb, outName);
     };
 
     function showToast(msg) {
@@ -2206,11 +2918,17 @@
       setTimeout(() => box.classList.add('hidden'), 3200);
     }
 
-    // ================= 15. INITIALIZE PORTAL ON LOAD =================
     window.addEventListener('DOMContentLoaded', () => {
       renderAllLogos();
       lucide.createIcons();
-      initCloudSync();
+      initCloudSync().then(() => {
+        const params = new URLSearchParams(window.location.search);
+        const resetToken = params.get('resetToken');
+        const resetUser = params.get('user');
+        if (resetToken && resetUser) {
+          openResetLinkScreen(resetUser, resetToken);
+        }
+      });
     });
   </script>
 </body>
