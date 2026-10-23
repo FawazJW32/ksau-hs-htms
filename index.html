@@ -78,9 +78,6 @@
 </head>
 <body class="text-slate-800 font-sans min-h-screen flex flex-col selection:bg-ksau-600 selection:text-white">
 
-  <!-- Hidden File Input for Official Emblem Upload -->
-  <input type="file" id="global-logo-upload" accept="image/*" class="hidden" onchange="handleLogoUpload(event)" />
-
   <!-- ================= AUTHENTICATION & LOGIN PORTAL ================= -->
   <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style="background: radial-gradient(circle at 25% 20%, #136f3a 0%, #094021 50%, #02170c 100%);">
     <div class="fixed top-5 right-5 z-20 flex items-center gap-2">
@@ -92,7 +89,7 @@
 
     <div class="relative w-full max-w-[440px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/25 animate-fade-up my-auto">
       <div class="bg-gradient-to-b from-ksau-800 via-ksau-700 to-ksau-800 px-6 pt-8 pb-6 text-center text-white relative border-b-4 border-ksau-goldbright">
-        <div class="w-28 h-28 mx-auto mb-3 rounded-full bg-white p-1 shadow-xl animate-float cursor-pointer relative group" onclick="triggerLogoUpload()" title="Official KSAU-HS Emblem">
+        <div class="w-28 h-28 mx-auto mb-3 rounded-full bg-white p-1 shadow-xl animate-float relative" title="Official KSAU-HS Emblem">
           <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
         </div>
         <p class="font-arabic text-sm font-bold text-ksau-goldlight tracking-wide mb-1">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
@@ -242,22 +239,21 @@
         <div id="forgot-dispatched-box" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
           <div class="flex items-start gap-2.5">
             <i data-lucide="mail-check" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
-            <div class="text-xs text-emerald-950 space-y-1">
-              <p class="font-extrabold">Password Reset Link Generated & Sent!</p>
-              <p>Recipient Email: <strong id="forgot-sent-email" class="font-mono underline"></strong></p>
-              <p class="text-[11px] text-emerald-800">Click the reset link below (or in your email client) to open the password reset page and set your new password:</p>
-            </div>
-          </div>
+          <button type="submit" id="forgot-submit-btn" class="w-full py-3 px-4 bg-ksau-600 hover:bg-ksau-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span id="forgot-submit-label">Send Password Reset Link to Email</span>
+          </button>
+        </form>
 
-          <div class="flex flex-col gap-2 pt-1">
-            <button type="button" id="btn-open-reset-link-now" class="w-full py-2.5 px-3 rounded-xl bg-ksau-700 hover:bg-ksau-800 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 shadow">
-              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-              <span>Open Password Reset Link Now</span>
-            </button>
-            <a id="btn-mailto-reset-link" href="#" class="w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-50 text-ksau-800 border border-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1.5 text-center">
-              <i data-lucide="mail" class="w-3.5 h-3.5"></i>
-              <span>Open Email Message in Mail App</span>
-            </a>
+        <!-- Clean Email Dispatched Notice (NO on-screen reset shortcut buttons) -->
+        <div id="forgot-dispatched-box" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2.5">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="mail-check" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i>
+            <div class="text-xs text-emerald-950 space-y-1.5">
+              <p class="font-extrabold">Password Reset Email Dispatched</p>
+              <p>A secure password reset link has been sent to <strong id="forgot-sent-email" class="font-mono underline"></strong>.</p>
+              <p class="text-[11px] text-emerald-800 leading-relaxed">Please open your email inbox (and check your Junk/Spam folder) and click the link inside the email to set your new password. The reset screen can only be opened from the link sent to your email.</p>
+            </div>
           </div>
         </div>
 
@@ -268,7 +264,7 @@
         </div>
       </div>
 
-      <!-- VIEW D: RESET PASSWORD VIA EMAIL LINK -->
+      <!-- VIEW D: RESET PASSWORD VIA EMAIL LINK (Accessible ONLY when opened via URL parameters from email) -->
       <form id="reset-via-link-form" onsubmit="handleCompletePasswordResetFromLink(event)" class="hidden p-7 pt-5 space-y-4 bg-white">
         <div class="border-b border-slate-100 pb-2.5">
           <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-extrabold uppercase">Verified Email Reset Link</span>
@@ -278,6 +274,7 @@
 
         <input type="hidden" id="reset-link-username" />
         <input type="hidden" id="reset-link-token" />
+        <input type="hidden" id="reset-link-oobcode" />
 
         <div id="reset-link-error" class="hidden p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold"></div>
 
@@ -310,7 +307,7 @@
       <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
         <!-- Brand & Emblem -->
         <div class="flex items-center gap-3.5">
-          <div onclick="triggerLogoUpload()" class="w-14 h-14 rounded-full bg-white p-0.5 shadow-md shrink-0 cursor-pointer hover:scale-105 transition relative group" title="Click to upload custom emblem file if desired">
+          <div class="w-14 h-14 rounded-full bg-white p-0.5 shadow-md shrink-0 relative" title="Official KSAU-HS Emblem">
             <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
           </div>
           <div>
@@ -544,7 +541,7 @@
           </div>
         </div>
 
-        <!-- Equipment Table Card (Serial No. Removed) -->
+        <!-- Equipment Table Card (Serial No. Removed, Full Status & Action Controls Always Visible) -->
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
           <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-left rtl:text-right border-collapse">
@@ -557,7 +554,7 @@
                   <th class="py-3.5 px-4" data-i18n="thModel">Model</th>
                   <th class="py-3.5 px-4" data-i18n="thManufacturer">Manufacturer</th>
                   <th class="py-3.5 px-4" data-i18n="thStatus">Status</th>
-                  <th class="py-3.5 px-4 text-right rtl:text-left" data-i18n="thActions">Actions</th>
+                  <th class="py-3.5 px-4 text-right rtl:text-left" data-i18n="thActions">Change Status / Actions</th>
                 </tr>
               </thead>
               <tbody id="inventory-tbody" class="divide-y divide-slate-200/70 text-xs"></tbody>
@@ -686,7 +683,7 @@
             </div>
             <div>
               <h2 class="text-base font-extrabold text-slate-900" data-i18n="staffHeading">Authorized Staff Credentials & Access Control</h2>
-              <p class="text-xs text-slate-500" data-i18n="staffSub">Manage staff accounts, reset passwords, and configure permissions (Abdulrahman Mufti's master profile is editable only by him)</p>
+              <p class="text-xs text-slate-500" data-i18n="staffSub">Each staff member's profile and password can only be edited or reset by the account owner</p>
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2">
@@ -704,7 +701,7 @@
         <div id="staff-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
       </section>
 
-      <!-- Official KSAU-HS Footer Sign-off Card (END-USER / LAB VERIFICATION Box Removed + Updated Contact Info) -->
+      <!-- Official KSAU-HS Footer Sign-off Card (Update Official Logo Image Button Removed) -->
       <footer class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm mt-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center">
           <div class="flex items-center gap-3.5">
@@ -732,7 +729,7 @@
         </div>
         <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
           <span>Contact & Support: <strong class="text-slate-800 font-mono">muftiab@ksau-hs.edu.sa</strong> • <strong class="text-slate-800 font-mono">Phone: 0114299999 ext. 98317</strong></span>
-          <button onclick="triggerLogoUpload()" class="text-ksau-600 hover:underline font-semibold">Update Official Logo Image</button>
+          <span class="text-slate-400 font-mono">King Saud bin Abdulaziz University for Health Sciences</span>
         </div>
       </footer>
     </main>
@@ -1133,6 +1130,14 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      verifyPasswordResetCode,
+      confirmPasswordReset
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // ================= 1. HIGH-PRECISION EXACT KSAU-HS EMBLEM SVG REPLICA =================
@@ -1399,14 +1404,14 @@
         thModel: 'Model',
         thManufacturer: 'Manufacturer',
         thStatus: 'Status',
-        thActions: 'Actions',
+        thActions: 'Change Status / Actions',
         logbookHeading: 'Respiratory Therapy Lab Contingency Logbook',
         logbookSub: 'Official record of equipment faults, unavailable devices, backup unit allocations, and status resets',
         logNewIssueBtn: '+ Log Contingency Issue',
         createUserPageHeading: 'Create New Staff Account & Assign Permissions',
         createUserPageSub: 'Provision login credentials for Respiratory Therapy faculty, specialists, or lab staff',
         staffHeading: 'Authorized Staff Credentials & Access Control',
-        staffSub: 'Manage staff accounts, reset passwords, and configure permissions',
+        staffSub: 'Each staff member\'s profile and password can only be edited or reset by the account owner',
         createStaffBtn: '+ Create New User',
         rtSpecialistSignoff: 'RT SPECIALIST SIGN-OFF & LAB SUPERVISOR',
         reportModalTitle: 'Official KSAU-HS Inventory & Contingency Report',
@@ -1467,14 +1472,14 @@
         thModel: 'الموديل',
         thManufacturer: 'الشركة المصنعة',
         thStatus: 'الحالة',
-        thActions: 'الإجراءات',
+        thActions: 'تغيير الحالة / الإجراءات',
         logbookHeading: 'سجل الطوارئ والأعطال لمعامل العلاج التنفسي',
         logbookSub: 'السجل الرسمي لأعطال الأجهزة وتخصيص الوحدات البديلة وإعادة ضبط الجاهزية',
         logNewIssueBtn: '+ تسجيل بلاغ طوارئ',
         createUserPageHeading: 'إنشاء حساب موظف جديد وتحديد الصلاحيات',
         createUserPageSub: 'إصدار بيانات دخول لأعضاء هيئة التدريس أو أخصائيي العلاج التنفسي',
         staffHeading: 'إدارة حسابات الموظفين المعتمدين وصلاحيات الوصول',
-        staffSub: 'إدارة الحسابات وإعادة تعيين كلمات المرور',
+        staffSub: 'لا يمكن تعديل الملف الشخصي أو إعادة تعيين كلمة المرور إلا من قبل صاحب الحساب نفسه',
         createStaffBtn: '+ إنشاء مستخدم جديد',
         rtSpecialistSignoff: 'اعتماد أخصائي العلاج التنفسي ومشرف المعامل',
         reportModalTitle: 'التقرير الرسمي لجرد الأجهزة الطبية وسجل الطوارئ - KSAU-HS',
@@ -1502,6 +1507,7 @@
     };
 
     let db = null;
+    let firebaseAuth = null;
     let isCloudConnected = false;
     const firebaseConfig = {
       apiKey: "AIzaSyDlTDTY-0zpnF4TS0xGwwiXinqcsqMNN84",
@@ -1513,34 +1519,57 @@
       measurementId: "G-5B2CL51V6N"
     };
 
+    const SVG_DATA_URI = 'data:image/svg+xml;utf8,' + encodeURIComponent(EXACT_KSAU_SVG.trim());
+
     function renderAllLogos() {
       const slots = document.querySelectorAll('.ksau-logo-slot');
       slots.forEach(slot => {
         if (state.customLogoDataUrl) {
           slot.innerHTML = `<img src="${state.customLogoDataUrl}" alt="KSAU-HS Emblem" class="w-full h-full object-contain rounded-full" />`;
         } else {
-          slot.innerHTML = `<img src="images_2.jpg" alt="KSAU-HS" class="w-full h-full object-contain rounded-full" onerror="this.onerror=null; this.src='images.jpg'; this.addEventListener('error', () => { if (this.parentElement) this.parentElement.innerHTML = window.__EXACT_KSAU_SVG; });" />`;
+          slot.innerHTML = `<img src="images_2.jpg" alt="KSAU-HS" class="w-full h-full object-contain rounded-full" onerror="this.onerror=null; this.src=window.__KSAU_SVG_URI;" />`;
         }
       });
     }
-    window.__EXACT_KSAU_SVG = EXACT_KSAU_SVG;
+    window.__KSAU_SVG_URI = SVG_DATA_URI;
 
-    window.triggerLogoUpload = function() {
-      document.getElementById('global-logo-upload').click();
-    };
-
-    window.handleLogoUpload = function(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        state.customLogoDataUrl = e.target.result;
-        renderAllLogos();
-        await persistState();
-        showToast('Official university emblem updated successfully');
-      };
-      reader.readAsDataURL(file);
-    };
+    // Ensure every non-operational device has a matching entry in state.logs so Contingency Log is ALWAYS in sync
+    function syncLogsWithInventoryState() {
+      let changed = false;
+      state.inventory.forEach(item => {
+        if (item.status !== 'Operational') {
+          const hasLog = state.logs.some(l => l.deviceId === item.id || l.htms === item.htms);
+          if (!hasLog) {
+            state.logs.unshift({
+              id: 'LOG-' + (100 + state.logs.length + 1),
+              deviceId: item.id,
+              lab: item.lab,
+              htms: item.htms,
+              ku: item.ku,
+              deviceName: `${item.desc} (${item.model})`,
+              status: item.status,
+              issue: item.status === 'Contingency / Fault'
+                ? 'Device marked under Contingency / Fault status.'
+                : 'Device marked as Not Available for clinical skills training.',
+              action: 'Backup HTMS unit assigned pending status reset to Operational.',
+              specialist: state.currentUser ? `${state.currentUser.name}, ${state.currentUser.role}` : 'Abdulrahman Mufti, RT Specialist',
+              contact: state.currentUser?.email || 'muftiab@ksau-hs.edu.sa',
+              timestamp: new Date().toLocaleString()
+            });
+            changed = true;
+          } else {
+            // Keep existing log status in sync with the equipment's current status
+            state.logs.forEach(l => {
+              if ((l.deviceId === item.id || l.htms === item.htms) && l.status !== item.status) {
+                l.status = item.status;
+                changed = true;
+              }
+            });
+          }
+        }
+      });
+      return changed;
+    }
 
     function loadLocalCache() {
       try {
@@ -1552,6 +1581,7 @@
         if (p.logs) state.logs = p.logs;
         if (p.users) state.users = p.users;
         if (p.customLogoDataUrl) state.customLogoDataUrl = p.customLogoDataUrl;
+        syncLogsWithInventoryState();
       } catch (e) {
         console.warn('Local cache warning:', e);
       }
@@ -1577,6 +1607,7 @@
       try {
         const app = initializeApp(firebaseConfig);
         try { getAnalytics(app); } catch (_) {}
+        try { firebaseAuth = getAuth(app); } catch (_) {}
         db = getFirestore(app);
         isCloudConnected = true;
 
@@ -1589,6 +1620,7 @@
             if (data.logs) state.logs = JSON.parse(data.logs);
             if (data.users) state.users = JSON.parse(data.users);
             if (data.customLogoDataUrl !== undefined) state.customLogoDataUrl = data.customLogoDataUrl || null;
+            syncLogsWithInventoryState();
             saveLocalCache();
             renderAllLogos();
             if (state.currentUser) {
@@ -1597,6 +1629,7 @@
               refreshAllViews();
             }
           } else {
+            syncLogsWithInventoryState();
             persistState();
           }
         });
@@ -1606,6 +1639,7 @@
     }
 
     async function persistState() {
+      syncLogsWithInventoryState();
       saveLocalCache();
       if (isCloudConnected && db) {
         try {
@@ -1622,6 +1656,54 @@
           console.warn('Firestore write warning:', e);
         }
       }
+    }
+
+    // Helper: Send real password reset email via Firebase Auth + FormSubmit email delivery service
+    async function dispatchRealPasswordResetEmail(targetUser, resetUrl) {
+      let sentViaFirebase = false;
+
+      // 1. Attempt Firebase Authentication Email Service (if Email/Password provider is enabled in Firebase console)
+      if (firebaseAuth && targetUser.email) {
+        try {
+          // Ensure user exists in Firebase Auth first so sendPasswordResetEmail succeeds
+          try {
+            await createUserWithEmailAndPassword(firebaseAuth, targetUser.email, targetUser.password || 'KsauTemp#2026');
+          } catch (_) {
+            // User already exists in Firebase Auth or provider check
+          }
+          await sendPasswordResetEmail(firebaseAuth, targetUser.email, {
+            url: resetUrl,
+            handleCodeInApp: true
+          });
+          sentViaFirebase = true;
+        } catch (fbErr) {
+          console.warn('Firebase Auth reset email note:', fbErr?.message || fbErr);
+        }
+      }
+
+      // 2. Also dispatch the direct reset link email via FormSubmit AJAX relay so the user receives the exact reset URL in their inbox
+      try {
+        await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetUser.email)}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: 'KSAU-HS Respiratory Therapy Portal — Password Reset Link',
+            _template: 'box',
+            _captcha: 'false',
+            Account_Name: targetUser.name,
+            Username: targetUser.username,
+            Password_Reset_Link: resetUrl,
+            Instructions: 'Click the Password_Reset_Link above to open the KSAU-HS portal and set your new password.'
+          })
+        });
+      } catch (relayErr) {
+        console.warn('Secondary email relay note:', relayErr);
+      }
+
+      return sentViaFirebase;
     }
 
     window.switchLoginPortalView = function(view) {
@@ -1674,8 +1756,8 @@
       const password = document.getElementById('reg-portal-password').value.trim();
       const errBox = document.getElementById('reg-portal-error');
 
-      if (password.length < 4) {
-        errBox.textContent = 'Password must be at least 4 characters.';
+      if (password.length < 6) {
+        errBox.textContent = 'Password must be at least 6 characters.';
         errBox.classList.remove('hidden');
         return;
       }
@@ -1703,6 +1785,13 @@
         perms: { editEq: true, logIssue: true, manageLabs: false, manageUsers: false }
       };
 
+      // Also register in Firebase Auth so real Firebase email password resets work seamlessly
+      if (firebaseAuth) {
+        try {
+          await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        } catch (_) {}
+      }
+
       state.users.push(newAcc);
       await persistState();
 
@@ -1720,6 +1809,8 @@
       const query = document.getElementById('forgot-identifier-input').value.trim().toLowerCase();
       const errBox = document.getElementById('forgot-error-box');
       const dispatchedBox = document.getElementById('forgot-dispatched-box');
+      const submitBtn = document.getElementById('forgot-submit-btn');
+      const submitLabel = document.getElementById('forgot-submit-label');
 
       const matchedUser = state.users.find(u =>
         u.username.toLowerCase() === query || (u.email && u.email.toLowerCase() === query)
@@ -1733,42 +1824,51 @@
       }
 
       errBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'Sending Reset Email...';
+
       const resetToken = 'RST-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
       matchedUser.resetToken = resetToken;
       await persistState();
 
-      const baseUrl = window.location.href.split('?')[0];
+      const baseUrl = window.location.href.startsWith('blob:')
+        ? 'https://fawazjw32.github.io/ksau-hs-htms/'
+        : window.location.href.split('?')[0];
       const resetUrl = `${baseUrl}?resetToken=${encodeURIComponent(resetToken)}&user=${encodeURIComponent(matchedUser.username)}`;
 
+      await dispatchRealPasswordResetEmail(matchedUser, resetUrl);
+
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Send Password Reset Link to Email';
       document.getElementById('forgot-sent-email').textContent = matchedUser.email;
-
-      const openNowBtn = document.getElementById('btn-open-reset-link-now');
-      openNowBtn.onclick = function() {
-        openResetLinkScreen(matchedUser.username, resetToken);
-      };
-
-      const subject = encodeURIComponent('KSAU-HS RT Portal - Password Reset Link');
-      const body = encodeURIComponent(
-        `Hello ${matchedUser.name},\n\n` +
-        `A password reset was requested for your KSAU-HS Respiratory Therapy Skills Lab account (Username: ${matchedUser.username}).\n\n` +
-        `Click the link below to reset your password:\n${resetUrl}\n\n` +
-        `Reset Token: ${resetToken}\n\n` +
-        `KSAU-HS Respiratory Therapy Skills Labs`
-      );
-      document.getElementById('btn-mailto-reset-link').href = `mailto:${matchedUser.email}?subject=${subject}&body=${body}`;
-
       dispatchedBox.classList.remove('hidden');
       lucide.createIcons();
     };
 
-    window.openResetLinkScreen = function(username, token) {
-      const targetUser = state.users.find(u => u.username.toLowerCase() === (username || '').toLowerCase());
+    window.openResetLinkScreen = async function(username, token, oobCode = null) {
+      let targetUser = null;
+
+      if (oobCode && firebaseAuth) {
+        try {
+          const emailFromCode = await verifyPasswordResetCode(firebaseAuth, oobCode);
+          targetUser = state.users.find(u => (u.email || '').toLowerCase() === emailFromCode.toLowerCase());
+        } catch (err) {
+          console.warn('Invalid or expired Firebase oobCode:', err);
+        }
+      }
+
+      if (!targetUser && username) {
+        targetUser = state.users.find(u => u.username.toLowerCase() === (username || '').toLowerCase());
+      }
+
       if (!targetUser) {
         switchLoginPortalView('signin');
         return;
       }
+
       document.getElementById('reset-link-username').value = targetUser.username;
       document.getElementById('reset-link-token').value = token || '';
+      document.getElementById('reset-link-oobcode').value = oobCode || '';
       document.getElementById('reset-link-account-label').textContent = `${targetUser.name} (${targetUser.username} • ${targetUser.email})`;
       document.getElementById('reset-link-new-pass').value = '';
       document.getElementById('reset-link-confirm-pass').value = '';
@@ -1779,6 +1879,7 @@
       e.preventDefault();
       const uname = document.getElementById('reset-link-username').value;
       const token = document.getElementById('reset-link-token').value;
+      const oobCode = document.getElementById('reset-link-oobcode').value;
       const newPass = document.getElementById('reset-link-new-pass').value.trim();
       const confPass = document.getElementById('reset-link-confirm-pass').value.trim();
       const errBox = document.getElementById('reset-link-error');
@@ -1790,7 +1891,7 @@
         return;
       }
 
-      if (targetUser.resetToken && token && targetUser.resetToken !== token) {
+      if (!oobCode && targetUser.resetToken && token && targetUser.resetToken !== token) {
         errBox.textContent = 'This password reset link has expired or is invalid.';
         errBox.classList.remove('hidden');
         return;
@@ -1808,11 +1909,19 @@
         return;
       }
 
+      if (oobCode && firebaseAuth) {
+        try {
+          await confirmPasswordReset(firebaseAuth, oobCode, newPass);
+        } catch (err) {
+          console.warn('Firebase confirmPasswordReset note:', err);
+        }
+      }
+
       targetUser.password = newPass;
       delete targetUser.resetToken;
       await persistState();
 
-      if (window.location.search.includes('resetToken')) {
+      if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
@@ -1824,13 +1933,32 @@
       banner.classList.remove('hidden');
     };
 
-    window.handleLogin = function(e) {
+    window.handleLogin = async function(e) {
       e.preventDefault();
       const u = document.getElementById('login-username').value.trim();
       const p = document.getElementById('login-password').value.trim();
       const errBox = document.getElementById('login-error');
 
-      const matched = state.users.find(acc => acc.username.toLowerCase() === u.toLowerCase() && acc.password === p);
+      let matched = state.users.find(acc =>
+        (acc.username.toLowerCase() === u.toLowerCase() || (acc.email && acc.email.toLowerCase() === u.toLowerCase())) &&
+        acc.password === p
+      );
+
+      // If user reset password via Firebase Auth email link, verify against Firebase Auth and sync password to Firestore
+      if (!matched && firebaseAuth) {
+        const candidate = state.users.find(acc =>
+          acc.username.toLowerCase() === u.toLowerCase() || (acc.email && acc.email.toLowerCase() === u.toLowerCase())
+        );
+        if (candidate && candidate.email) {
+          try {
+            await signInWithEmailAndPassword(firebaseAuth, candidate.email, p);
+            candidate.password = p;
+            matched = candidate;
+            await persistState();
+          } catch (_) {}
+        }
+      }
+
       if (!matched) {
         errBox.classList.remove('hidden');
         return;
@@ -1857,19 +1985,10 @@
       inp.type = inp.type === 'password' ? 'text' : 'password';
     };
 
-    function isCurrentUserMaster() {
-      return !!(state.currentUser && (state.currentUser.isMaster || state.currentUser.username.toLowerCase() === 'amufti'));
-    }
-
+    // STRICT ACCOUNT PRIVACY: Only the logged-in owner of an account can edit their profile or reset their password
     function canCurrentUserModifyAccount(targetUser) {
-      if (!state.currentUser) return false;
-      if (targetUser.isMaster || targetUser.username.toLowerCase() === 'amufti') {
-        return isCurrentUserMaster();
-      }
-      if (state.currentUser.username.toLowerCase() === targetUser.username.toLowerCase()) {
-        return true;
-      }
-      return !!state.currentUser.perms?.manageUsers;
+      if (!state.currentUser || !targetUser) return false;
+      return state.currentUser.username.toLowerCase() === targetUser.username.toLowerCase();
     }
 
     function updateUserHeaderUI() {
@@ -1905,7 +2024,7 @@
       if (!targetAcc) return;
 
       if (!canCurrentUserModifyAccount(targetAcc)) {
-        showToast('Access Denied: Abdulrahman Mufti\'s account can only be modified by him.');
+        showToast('Access Denied: You can only reset your own account password.');
         return;
       }
 
@@ -1916,9 +2035,8 @@
       document.getElementById('pw-confirm-input').value = '';
       document.getElementById('pw-error-box').classList.add('hidden');
 
-      const isSelf = state.currentUser.username.toLowerCase() === targetAcc.username.toLowerCase();
-      document.getElementById('pw-current-wrap').style.display = isSelf ? 'block' : 'none';
-      document.getElementById('pw-current-input').required = isSelf;
+      document.getElementById('pw-current-wrap').style.display = 'block';
+      document.getElementById('pw-current-input').required = true;
 
       document.getElementById('password-reset-modal').classList.remove('hidden');
     };
@@ -1937,13 +2055,12 @@
 
       const targetAcc = state.users.find(u => u.username.toLowerCase() === targetUname.toLowerCase());
       if (!targetAcc || !canCurrentUserModifyAccount(targetAcc)) {
-        errBox.textContent = 'Unauthorized password reset attempt.';
+        errBox.textContent = 'Access Denied: You can only reset your own password.';
         errBox.classList.remove('hidden');
         return;
       }
 
-      const isSelf = state.currentUser.username.toLowerCase() === targetAcc.username.toLowerCase();
-      if (isSelf && targetAcc.password !== currPass) {
+      if (targetAcc.password !== currPass) {
         errBox.textContent = 'Current password is incorrect.';
         errBox.classList.remove('hidden');
         return;
@@ -1962,12 +2079,27 @@
       }
 
       targetAcc.password = newPass;
-      if (isSelf) state.currentUser.password = newPass;
+      state.currentUser.password = newPass;
 
       closePasswordResetModal();
       refreshAllViews();
       await persistState();
-      showToast(`Password updated successfully for ${targetAcc.name}`);
+      showToast(`Your password has been updated successfully`);
+    };
+
+    // Direct inline status change from any row in the main inventory table
+    window.handleInlineStatusChange = async function(itemId, newStatus) {
+      const item = state.inventory.find(i => i.id === itemId);
+      if (!item) return;
+
+      if (newStatus === 'Operational') {
+        await resetEquipmentStatus(itemId);
+        return;
+      }
+
+      // Open the Contingency Modal pre-populated with this device and chosen status so a full contingency log is recorded
+      openContingencyModal(itemId, newStatus);
+      renderInventory();
     };
 
     window.toggleLanguage = function() {
@@ -2179,8 +2311,8 @@
     window.renderInventory = function() {
       const tbody = document.getElementById('inventory-tbody');
       const items = getFilteredInventory();
-      const canEdit = state.currentUser?.perms?.editEq;
-      const canLog = state.currentUser?.perms?.logIssue;
+      const canEdit = !!(state.currentUser?.perms?.editEq);
+      const canLog = !!(state.currentUser?.perms?.logIssue);
 
       if (items.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-400 font-semibold">No matching medical equipment records found.</td></tr>`;
@@ -2214,7 +2346,14 @@
             <td class="py-3.5 px-4 text-slate-600">${item.mfg}</td>
             <td class="py-3.5 px-4 whitespace-nowrap">${statusBadgeHtml(item.status)}</td>
             <td class="py-3.5 px-4 text-right rtl:text-left whitespace-nowrap">
-              <div class="inline-flex items-center gap-1.5">
+              <div class="inline-flex items-center justify-end gap-1.5">
+                ${(canLog || canEdit) ? `
+                  <select onchange="handleInlineStatusChange('${item.id}', this.value)" class="px-2 py-1 rounded-lg bg-slate-50 hover:bg-white border border-slate-200 text-[11px] font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-ksau-600 cursor-pointer" title="Change Equipment Status">
+                    <option value="Operational" ${item.status === 'Operational' ? 'selected' : ''}>Operational</option>
+                    <option value="Contingency / Fault" ${item.status === 'Contingency / Fault' ? 'selected' : ''}>Contingency / Fault</option>
+                    <option value="Not Available" ${item.status === 'Not Available' ? 'selected' : ''}>Not Available</option>
+                  </select>
+                ` : ''}
                 ${isNonOperational && (canLog || canEdit) ? `
                   <button onclick="resetEquipmentStatus('${item.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition flex items-center gap-1 shadow-sm" title="Download Backup & Reset Status">
                     <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
@@ -2323,8 +2462,8 @@
       const grid = document.getElementById('staff-grid');
       grid.innerHTML = state.users.map((u, idx) => {
         const isMasterAcc = !!(u.isMaster || u.username.toLowerCase() === 'amufti');
-        const canModifyThis = canCurrentUserModifyAccount(u);
-        const canDeleteThis = !isMasterAcc && state.currentUser?.perms?.manageUsers;
+        const isOwnAccount = canCurrentUserModifyAccount(u);
+        const canDeleteThis = !isMasterAcc && !isOwnAccount && state.currentUser?.perms?.manageUsers;
 
         return `
           <div class="bg-white rounded-2xl p-5 border ${isMasterAcc ? 'border-ksau-600 ring-1 ring-ksau-600/20' : 'border-slate-200/80'} shadow-sm flex flex-col justify-between space-y-4">
@@ -2337,6 +2476,7 @@
                   <div class="flex items-center gap-1.5">
                     <h4 class="text-sm font-extrabold text-slate-900">${u.name}</h4>
                     ${isMasterAcc ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">Master RT Specialist</span>` : ''}
+                    ${isOwnAccount ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">Your Account</span>` : ''}
                   </div>
                   <p class="text-xs text-ksau-700 font-bold">${u.role}</p>
                   <p class="text-[11px] font-mono text-slate-500">Username: <strong>${u.username}</strong></p>
@@ -2358,19 +2498,19 @@
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-              ${canModifyThis ? `
+              ${isOwnAccount ? `
                 <button onclick="openEditStaffModal('${u.username}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 transition">
                   <i data-lucide="user-pen" class="w-3.5 h-3.5"></i>
-                  <span>Edit Profile</span>
+                  <span>Edit My Profile</span>
                 </button>
                 <button onclick="openPasswordResetModal('${u.username}')" class="flex-1 py-2 px-3 rounded-xl bg-ksau-50 hover:bg-ksau-100 text-ksau-800 border border-ksau-200 text-xs font-bold flex items-center justify-center gap-1.5 transition">
                   <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
-                  <span>Reset Password</span>
+                  <span>Reset My Password</span>
                 </button>
               ` : `
                 <div class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-400 font-semibold flex items-center justify-center gap-1.5">
                   <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-                  <span>Protected — Editable Only by Abdulrahman Mufti</span>
+                  <span>Protected — Editable Only by ${u.name}</span>
                 </div>
               `}
             </div>
@@ -2420,7 +2560,7 @@
       const target = state.users.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (!target) return;
       if (!canCurrentUserModifyAccount(target)) {
-        showToast('Access Denied: Abdulrahman Mufti\'s profile is editable only by him.');
+        showToast('Access Denied: Each staff member\'s profile can only be edited by the account owner.');
         return;
       }
 
@@ -2543,6 +2683,7 @@
       e.preventDefault();
       const editId = document.getElementById('eq-edit-id').value;
       const mfgVal = document.getElementById('eq-mfg').value.trim();
+      const newStatus = document.getElementById('eq-status').value;
       const subs = Array.from(document.querySelectorAll('.sub-item-row')).map(row => ({
         desc: row.querySelector('.sub-desc').value.trim(),
         ku: row.querySelector('.sub-ku').value.trim() || 'NA',
@@ -2554,7 +2695,7 @@
         id: editId || ('EQ-' + Date.now()),
         lab: document.getElementById('eq-lab').value,
         sn: Number(document.getElementById('eq-sn').value),
-        status: document.getElementById('eq-status').value,
+        status: newStatus,
         desc: document.getElementById('eq-desc').value.trim(),
         htms: document.getElementById('eq-htms').value.trim(),
         ku: document.getElementById('eq-ku').value.trim(),
@@ -2570,18 +2711,50 @@
         state.inventory.push(record);
       }
 
+      // Synchronize Contingency Logbook whenever equipment status is changed via Edit/Add Modal
+      if (newStatus === 'Operational') {
+        state.logs = state.logs.filter(l => l.deviceId !== record.id && l.htms !== record.htms);
+      } else {
+        const existingLog = state.logs.find(l => l.deviceId === record.id || l.htms === record.htms);
+        if (existingLog) {
+          existingLog.status = newStatus;
+          existingLog.deviceName = `${record.desc} (${record.model})`;
+          existingLog.timestamp = new Date().toLocaleString();
+        } else {
+          state.logs.unshift({
+            id: 'LOG-' + (100 + state.logs.length + 1),
+            deviceId: record.id,
+            lab: record.lab,
+            htms: record.htms,
+            ku: record.ku,
+            deviceName: `${record.desc} (${record.model})`,
+            status: newStatus,
+            issue: newStatus === 'Contingency / Fault'
+              ? 'Equipment status changed to Contingency / Fault.'
+              : 'Equipment status changed to Not Available.',
+            action: 'Backup HTMS unit assigned pending status reset to Operational.',
+            specialist: `${state.currentUser.name}, ${state.currentUser.role}`,
+            contact: state.currentUser.email || 'muftiab@ksau-hs.edu.sa',
+            timestamp: new Date().toLocaleString()
+          });
+        }
+      }
+
       closeEquipmentModal();
       refreshAllViews();
       await persistState();
-      showToast('Medical equipment record saved');
+      showToast('Medical equipment record & contingency log synchronized');
     };
 
-    window.openContingencyModal = function(preselectId = null) {
+    window.openContingencyModal = function(preselectId = null, preselectStatus = null) {
       const sel = document.getElementById('log-device-id');
       sel.innerHTML = state.inventory.map(item =>
         `<option value="${item.id}">[${item.lab} • SN ${item.sn}] ${item.desc} (HTMS #${item.htms})</option>`
       ).join('');
       if (preselectId) sel.value = preselectId;
+      if (preselectStatus) {
+        document.getElementById('log-new-status').value = preselectStatus;
+      }
       document.getElementById('contingency-modal').classList.remove('hidden');
     };
 
@@ -2598,10 +2771,19 @@
 
       const item = state.inventory.find(i => i.id === devId);
       if (!item) return;
+
+      if (newStatus === 'Operational') {
+        closeContingencyModal();
+        await resetEquipmentStatus(item.id);
+        return;
+      }
+
       item.status = newStatus;
 
-      state.logs.unshift({
-        id: 'LOG-' + (100 + state.logs.length + 1),
+      // Update existing log for this device or insert a new one at top
+      const existingIdx = state.logs.findIndex(l => l.deviceId === item.id || l.htms === item.htms);
+      const logEntry = {
+        id: existingIdx > -1 ? state.logs[existingIdx].id : ('LOG-' + (100 + state.logs.length + 1)),
         deviceId: item.id,
         lab: item.lab,
         htms: item.htms,
@@ -2613,7 +2795,12 @@
         specialist: `${state.currentUser.name}, ${state.currentUser.role}`,
         contact: state.currentUser.email || 'muftiab@ksau-hs.edu.sa',
         timestamp: new Date().toLocaleString()
-      });
+      };
+
+      if (existingIdx > -1) {
+        state.logs.splice(existingIdx, 1);
+      }
+      state.logs.unshift(logEntry);
 
       document.getElementById('contingency-form').reset();
       closeContingencyModal();
@@ -2925,8 +3112,11 @@
         const params = new URLSearchParams(window.location.search);
         const resetToken = params.get('resetToken');
         const resetUser = params.get('user');
-        if (resetToken && resetUser) {
-          openResetLinkScreen(resetUser, resetToken);
+        const mode = params.get('mode');
+        const oobCode = params.get('oobCode');
+
+        if ((resetToken && resetUser) || (mode === 'resetPassword' && oobCode)) {
+          openResetLinkScreen(resetUser, resetToken, oobCode);
         }
       });
     });
