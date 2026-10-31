@@ -78,56 +78,7 @@
     .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    /* Discrete Pre-Paginated A4 Landscape Report Sheets */
-    .report-a4-sheet {
-      background: #ffffff;
-      color: #0f172a;
-      width: 100%;
-      max-width: 1040px;
-      margin: 0 auto 24px auto;
-      padding: 22px 26px;
-      border-radius: 12px;
-      border: 1px solid #cbd5e1;
-      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-    .report-Exporting .report-a4-sheet {
-      margin: 0 auto !important;
-      border: none !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      padding: 10px 14px !important;
-      max-width: 100% !important;
-    }
-    .report-fixed-table {
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
-    }
-    .report-fixed-table th,
-    .report-fixed-table td {
-      border: 1px solid #94a3b8;
-      padding: 5px 7px;
-      vertical-align: middle;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      line-height: 1.3;
-    }
-    .report-fixed-table tr {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
     @media print {
-      @page {
-        size: A4 landscape;
-        margin: 8mm;
-      }
       body * { visibility: hidden; }
       body.printing-manual #printable-manual-area,
       body.printing-manual #printable-manual-area * { visibility: visible; }
@@ -146,26 +97,8 @@
         left: 0;
         top: 0;
         width: 100%;
-        background: transparent !important;
         box-shadow: none !important;
         border: none !important;
-        padding: 0 !important;
-      }
-      body:not(.printing-manual) .report-a4-sheet {
-        margin: 0 !important;
-        padding: 6mm !important;
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        max-width: 100% !important;
-        page-break-after: always;
-        break-after: page;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-      body:not(.printing-manual) .report-a4-sheet:last-child {
-        page-break-after: auto;
-        break-after: auto;
       }
       .no-print { display: none !important; }
     }
@@ -862,7 +795,7 @@
           <i data-lucide="file-check-2" class="w-5 h-5 text-ksau-goldbright"></i>
           <div>
             <h3 class="text-sm font-extrabold" data-i18n="reportModalTitle">Official KSAU-HS Inventory & Contingency Report</h3>
-            <p class="text-[11px] text-emerald-200" data-i18n="reportModalSub">Pre-Paginated A4 Landscape Sheets by Laboratory — Zero Row Splitting or Page Merging</p>
+            <p class="text-[11px] text-emerald-200" data-i18n="reportModalSub">Includes Equipment Inventory & Active Contingency Logbook — Download as PDF or Print</p>
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
@@ -883,9 +816,63 @@
         </div>
       </div>
 
-      <!-- Multi-Page Pre-Paginated A4 Landscape Container -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scroll bg-slate-200/70">
-        <div id="printable-report-area" class="mx-auto max-w-[1060px]"></div>
+      <!-- Printable A4 Document Sheet -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scroll">
+        <div id="printable-report-area" class="bg-white text-slate-900 mx-auto max-w-[1000px] p-8 rounded-xl shadow-md border border-slate-200">
+          <!-- Official University Letterhead -->
+          <div class="border-b-2 border-ksau-700 pb-4 mb-5 flex items-center justify-between gap-4">
+            <div class="text-xs space-y-0.5">
+              <p class="font-extrabold text-slate-900 uppercase">Kingdom of Saudi Arabia</p>
+              <p class="font-bold text-ksau-700">King Saud bin Abdulaziz University for Health Sciences</p>
+              <p class="font-semibold text-slate-700">College of Applied Medical Sciences - Male (Central Region)</p>
+              <p class="text-slate-500">Respiratory Therapy Skills Laboratories</p>
+            </div>
+            <div class="w-20 h-20 shrink-0">
+              <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
+            </div>
+            <div class="text-right font-arabic text-xs space-y-0.5" dir="rtl">
+              <p class="font-extrabold text-slate-900">المملكة العربية السعودية</p>
+              <p class="font-bold text-ksau-700">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
+              <p class="font-semibold text-slate-700">كلية العلوم الطبية التطبيقية - طلاب (المنطقة الوسطى)</p>
+              <p class="text-slate-500">معامل مهارات العلاج التنفسي</p>
+            </div>
+          </div>
+
+          <div class="text-center mb-5">
+            <h2 class="text-sm sm:text-base font-extrabold uppercase tracking-wide text-ksau-800 bg-ksau-50 py-2 px-4 rounded-lg border border-ksau-200 inline-block">
+              MEDICAL EQUIPMENT INVENTORY & CONTINGENCY REPORT — RESPIRATORY THERAPY SKILLS LAB
+            </h2>
+            <p id="report-lab-meta" class="text-xs font-bold text-slate-600 mt-1.5">Labs: CM-01-158 & CM-01-162 • Total Verified Systems: 50</p>
+          </div>
+
+          <!-- Section 1: Dynamic Equipment Inventory Table -->
+          <div class="mb-6">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-ksau-800 mb-2">1. Medical Equipment Inventory Schedule</h3>
+            <div id="report-table-container" class="overflow-x-auto"></div>
+          </div>
+
+          <!-- Section 2: Dynamic Contingency Logbook Table -->
+          <div class="mb-6">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-800 mb-2">2. Contingency & Equipment Fault Logbook</h3>
+            <div id="report-contingency-container" class="overflow-x-auto"></div>
+          </div>
+
+          <!-- Official Sign-Off Block (Abdulrahman Mufti Only — End-User Box Removed) -->
+          <div class="mt-8 pt-4 border-t-2 border-slate-300 text-xs">
+            <div class="border border-ksau-300 rounded-lg p-4 bg-ksau-50/40 max-w-md ml-auto">
+              <p class="font-extrabold uppercase text-ksau-800 border-b border-ksau-200 pb-1.5 mb-2">RT Specialist Verification & Sign-Off</p>
+              <p class="py-0.5"><strong>Name:</strong> Abdulrahman Mufti</p>
+              <p class="py-0.5"><strong>Title:</strong> RT Specialist</p>
+              <p class="py-0.5"><strong>Email:</strong> muftiab@ksau-hs.edu.sa</p>
+              <p class="py-0.5"><strong>Phone:</strong> 0114299999 ext. 98317</p>
+              <p class="py-1 mt-1.5"><strong>Signature:</strong> <span class="italic font-serif text-ksau-800 font-bold">Abdulrahman Mufti — RT Specialist</span></p>
+            </div>
+          </div>
+
+          <p class="mt-4 text-[10px] text-center text-slate-500">
+            For any inquiries or laboratory equipment coordination, please contact: <strong>Abdulrahman Mufti, RT Specialist</strong> • Email: <strong>muftiab@ksau-hs.edu.sa</strong> • Phone: <strong>0114299999 ext. 98317</strong>
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -1171,6 +1158,9 @@
             <input type="text" id="edit-prof-sec-a" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold" />
           </div>
         </div>
+        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closeEditProfileModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save My Profile</button>
         <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
           <button type="button" onclick="openDeleteMyProfileModal()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold flex items-center gap-1.5 transition">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -2699,6 +2689,7 @@
               <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms?.manageUsers ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Manage Staff: ${u.perms?.manageUsers ? 'Yes' : 'No'}</span>
             </div>
 
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
             <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
               ${isMe ? `
                 <button type="button" onclick="openEditProfileModal()" class="flex-1 py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold flex items-center justify-center gap-1 transition">
@@ -2903,11 +2894,269 @@
       await persistState();
       showToast('Equipment record & Contingency Log synchronized');
     };
-    // ================= 14. OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR (PRE-PAGINATED A4 LANDSCAPE SHEETS) =================
+
+    window.openContingencyModal = function(preselectId = null, preselectStatus = null) {
+      const sel = document.getElementById('log-device-id');
+      sel.innerHTML = state.inventory.map(item =>
+        `<option value="${item.id}">[${item.lab} • SN ${item.sn}] ${item.desc} (HTMS #${item.htms})</option>`
+      ).join('');
+      if (preselectId) sel.value = preselectId;
+
+      const statusSel = document.getElementById('log-new-status');
+      if (preselectStatus) {
+        statusSel.value = preselectStatus;
+      } else {
+        statusSel.value = 'Contingency / Fault';
+      }
+
+      const existingLog = preselectId ? state.logs.find(l => l.deviceId === preselectId) : null;
+      document.getElementById('log-issue').value = existingLog ? existingLog.issue : '';
+      document.getElementById('log-action').value = existingLog ? existingLog.action : '';
+
+      document.getElementById('contingency-modal').classList.remove('hidden');
+    };
+
+    window.closeContingencyModal = function() {
+      document.getElementById('contingency-modal').classList.add('hidden');
+    };
+
+    window.saveContingencyIssue = async function(e) {
+      e.preventDefault();
+      const devId = document.getElementById('log-device-id').value;
+      const newStatus = document.getElementById('log-new-status').value;
+      const issue = document.getElementById('log-issue').value.trim();
+      const action = document.getElementById('log-action').value.trim();
+
+      const item = state.inventory.find(i => i.id === devId);
+      if (!item) return;
+
+      if (newStatus === 'Operational') {
+        closeContingencyModal();
+        await resetDeviceStatusToOperational(devId);
+        return;
+      }
+
+      item.status = newStatus;
+      const existingIdx = state.logs.findIndex(l => l.deviceId === item.id);
+      const logEntry = {
+        id: existingIdx > -1 ? state.logs[existingIdx].id : ('LOG-' + (100 + state.logs.length + 1)),
+        deviceId: item.id,
+        lab: item.lab,
+        htms: item.htms,
+        ku: item.ku,
+        deviceName: `${item.desc} (${item.model})`,
+        status: newStatus,
+        issue,
+        action,
+        specialist: `${state.currentUser.name}, ${state.currentUser.role}`,
+        contact: state.currentUser.email || 'muftiab@ksau-hs.edu.sa',
+        timestamp: new Date().toLocaleString()
+      };
+
+      if (existingIdx > -1) {
+        state.logs[existingIdx] = logEntry;
+      } else {
+        state.logs.unshift(logEntry);
+      }
+
+      document.getElementById('contingency-form').reset();
+      closeContingencyModal();
+      refreshAllViews();
+      await persistState();
+      showToast('Contingency log recorded & device status updated');
+    };
+
+    window.openLabModal = function() {
+      document.getElementById('lab-modal').classList.remove('hidden');
+    };
+    window.closeLabModal = function() {
+      document.getElementById('lab-modal').classList.add('hidden');
+    };
+    window.saveNewLab = async function(e) {
+      e.preventDefault();
+      const code = document.getElementById('new-lab-code').value.trim().toUpperCase();
+      const name = document.getElementById('new-lab-name').value.trim();
+      const college = document.getElementById('new-lab-college').value.trim();
+      if (!state.labs.some(l => l.code === code)) {
+        state.labs.push({ code, name, college, region: 'Central Region' });
+      }
+      closeLabModal();
+      refreshAllViews();
+      await persistState();
+      showToast(`Laboratory ${code} created & synced`);
+    };
+
+    // Dedicated Create User Form inside Main Portal
+    window.saveInlineStaffAccount = async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('inline-staff-user').value.trim();
+      const email = document.getElementById('inline-staff-email').value.trim();
+      const qSelect = document.getElementById('inline-sec-q-select').value;
+      const qCustom = document.getElementById('inline-sec-q-custom').value.trim();
+      const secQuestion = qSelect === 'CUSTOM' ? qCustom : qSelect;
+      const secAnswer = document.getElementById('inline-sec-a').value.trim();
+
+      if (state.users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        showToast('Username already exists — please choose a unique username');
+        return;
+      }
+
+      const newAcc = {
+        id: 'STAFF-' + Date.now(),
+        isMaster: false,
+        name: document.getElementById('inline-staff-name').value.trim(),
+        role: document.getElementById('inline-staff-role').value.trim(),
+        username,
+        password: document.getElementById('inline-staff-pass').value.trim(),
+        email,
+        securityQuestion: secQuestion,
+        securityAnswer: secAnswer,
+        perms: {
+          editEq: document.getElementById('inline-perm-edit-eq').checked,
+          logIssue: document.getElementById('inline-perm-log').checked,
+          manageLabs: document.getElementById('inline-perm-labs').checked,
+          manageUsers: document.getElementById('inline-perm-users').checked
+        }
+      };
+
+      state.users.push(newAcc);
+      document.getElementById('inline-create-user-form').reset();
+      refreshAllViews();
+      await persistState();
+      switchMainTab('staff');
+      showToast(`Created user account for ${newAcc.name}`);
+    };
+
+    // Self Password Reset Modal (Strictly for Logged-In User Only)
+    window.openMyPasswordModal = function() {
+      if (!state.currentUser) return;
+      document.getElementById('reset-target-label').textContent = `${state.currentUser.name} (${state.currentUser.username})`;
+      document.getElementById('reset-new-password').value = '';
+      document.getElementById('reset-confirm-password').value = '';
+      document.getElementById('pw-modal-error').classList.add('hidden');
+      document.getElementById('password-reset-modal').classList.remove('hidden');
+    };
+
+    window.closePasswordResetModal = function() {
+      document.getElementById('password-reset-modal').classList.add('hidden');
+    };
+
+    window.saveNewPassword = async function(e) {
+      e.preventDefault();
+      if (!state.currentUser) return;
+      const p1 = document.getElementById('reset-new-password').value.trim();
+      const p2 = document.getElementById('reset-confirm-password').value.trim();
+      const errEl = document.getElementById('pw-modal-error');
+
+      if (p1 !== p2) {
+        errEl.textContent = 'Passwords do not match.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const idx = state.users.findIndex(u => u.username.toLowerCase() === state.currentUser.username.toLowerCase());
+      if (idx > -1) {
+        state.users[idx].password = p1;
+        state.currentUser.password = p1;
+      }
+      closePasswordResetModal();
+      await persistState();
+      showToast('Your password has been updated');
+    };
+
+    // Self Profile & Security Question Edit Modal (Strictly for Logged-In User Only)
+    window.openEditProfileModal = function() {
+      const u = state.currentUser;
+      if (!u) return;
+      document.getElementById('edit-prof-name').value = u.name;
+      document.getElementById('edit-prof-role').value = u.role;
+      document.getElementById('edit-prof-user').value = u.username;
+      document.getElementById('edit-prof-email').value = u.email || 'muftiab@ksau-hs.edu.sa';
+      document.getElementById('edit-prof-sec-q').value = u.securityQuestion || 'What is your KSAU-HS phone extension number?';
+      document.getElementById('edit-prof-sec-a').value = u.securityAnswer || '';
+      document.getElementById('edit-profile-modal').classList.remove('hidden');
+    };
+
+    window.closeEditProfileModal = function() {
+      document.getElementById('edit-profile-modal').classList.add('hidden');
+    };
+
+    window.saveEditedProfile = async function(e) {
+      e.preventDefault();
+      if (!state.currentUser) return;
+      const idx = state.users.findIndex(u => u.username.toLowerCase() === state.currentUser.username.toLowerCase());
+      if (idx === -1) return;
+
+      const u = state.users[idx];
+      u.name = document.getElementById('edit-prof-name').value.trim();
+      u.role = document.getElementById('edit-prof-role').value.trim();
+      u.username = document.getElementById('edit-prof-user').value.trim();
+      u.email = document.getElementById('edit-prof-email').value.trim();
+      u.securityQuestion = document.getElementById('edit-prof-sec-q').value.trim();
+      u.securityAnswer = document.getElementById('edit-prof-sec-a').value.trim();
+
+      state.currentUser = u;
+      updateUserHeaderUI();
+      closeEditProfileModal();
+      refreshAllViews();
+      await persistState();
+      showToast('Your profile & security question have been updated');
+    };
+
+    // Delete My Own Profile Modal & Handler (Strictly for Logged-In User Only)
+    window.openDeleteMyProfileModal = function() {
+      const u = state.currentUser;
+      if (!u) return;
+      closeEditProfileModal();
+      const isMasterAcc = u.isMaster || u.username.toLowerCase() === 'amufti';
+
+      document.getElementById('delete-prof-title').textContent = `${u.name} (${u.role})`;
+      document.getElementById('delete-prof-meta').textContent = `Username: @${u.username} • Email: ${u.email || 'N/A'}`;
+
+      const masterWarn = document.getElementById('delete-prof-master-warning');
+      const descEl = document.getElementById('delete-prof-desc');
+      const confirmBtn = document.getElementById('btn-confirm-delete-prof');
+
+      if (isMasterAcc) {
+        masterWarn.classList.remove('hidden');
+        descEl.classList.add('hidden');
+        confirmBtn.classList.add('hidden');
+      } else {
+        masterWarn.classList.add('hidden');
+        descEl.classList.remove('hidden');
+        confirmBtn.classList.remove('hidden');
+      }
+
+      document.getElementById('delete-profile-modal').classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeDeleteMyProfileModal = function() {
+      document.getElementById('delete-profile-modal').classList.add('hidden');
+    };
+
+    window.confirmDeleteMyProfile = async function() {
+      const u = state.currentUser;
+      if (!u) return;
+      if (u.isMaster || u.username.toLowerCase() === 'amufti') {
+        showToast('Master RT Specialist account cannot be deleted');
+        closeDeleteMyProfileModal();
+        return;
+      }
+
+      const deletedUsername = u.username;
+      state.users = state.users.filter(acc => acc.username.toLowerCase() !== deletedUsername.toLowerCase());
+      closeDeleteMyProfileModal();
+      await persistState();
+      handleLogout();
+      showToast('Your profile has been permanently deleted');
+    };
+
+    // ================= 14. OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR (WITH CONTINGENCY LOG) =================
     window.openReportModal = function() {
       const sel = document.getElementById('report-lab-select');
-      sel.innerHTML = `<option value="ALL" class="text-slate-900">All Labs (${state.labs.map(l => l.code).join(' & ')})</option>` +
-        state.labs.map(l => `<option value="${l.code}" class="text-slate-900">Lab ${l.code} — ${l.name}</option>`).join('');
+      sel.innerHTML = `<option value="ALL">All Labs (${state.labs.map(l => l.code).join(' & ')})</option>` +
+        state.labs.map(l => `<option value="${l.code}">Lab ${l.code} — ${l.name}</option>`).join('');
       sel.value = state.selectedLab;
       renderPrintableReportContent();
       renderAllLogos();
@@ -2919,379 +3168,121 @@
       document.getElementById('report-modal').classList.add('hidden');
     };
 
-    function buildOfficialLetterheadHtml(scopeLabel, totalSystems, totalSubs, activeLogsCount) {
-      return `
-        <div class="border-b-2 border-ksau-700 pb-3 mb-3 flex items-center justify-between gap-4">
-          <div class="text-[11px] space-y-0.5 leading-snug">
-            <p class="font-extrabold text-slate-900 uppercase">Kingdom of Saudi Arabia</p>
-            <p class="font-bold text-ksau-700">King Saud bin Abdulaziz University for Health Sciences</p>
-            <p class="font-semibold text-slate-700">College of Applied Medical Sciences - Male (Central Region)</p>
-            <p class="text-slate-500">Respiratory Therapy Skills Laboratories</p>
-          </div>
-          <div class="w-16 h-16 shrink-0">
-            <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
-          </div>
-          <div class="text-right font-arabic text-[11px] space-y-0.5 leading-snug" dir="rtl">
-            <p class="font-extrabold text-slate-900">المملكة العربية السعودية</p>
-            <p class="font-bold text-ksau-700">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-            <p class="font-semibold text-slate-700">كلية العلوم الطبية التطبيقية - طلاب (المنطقة الوسطى)</p>
-            <p class="text-slate-500">معامل مهارات العلاج التنفسي</p>
-          </div>
-        </div>
-        <div class="text-center mb-3">
-          <div class="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-ksau-800 bg-ksau-50 py-1.5 px-4 rounded-lg border border-ksau-200 inline-block">
-            MEDICAL EQUIPMENT INVENTORY & CONTINGENCY REPORT — RESPIRATORY THERAPY SKILLS LAB
-          </div>
-          <p class="text-[11px] font-bold text-slate-600 mt-1">
-            Scope: ${scopeLabel} • Parent Systems: ${totalSystems} • Attached Sub-Components: ${totalSubs} • Active Contingency Logs: ${activeLogsCount}
-          </p>
-        </div>
-      `;
-    }
-
-    function buildCompactRunningHeaderHtml(scopeLabel) {
-      return `
-        <div class="border-b-2 border-ksau-700 pb-2 mb-2.5 flex items-center justify-between gap-3 text-[10.5px]">
-          <div class="flex items-center gap-2.5">
-            <div class="w-9 h-9 shrink-0">
-              <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
-            </div>
-            <div>
-              <p class="font-extrabold text-ksau-800 uppercase leading-tight">KSAU-HS • Respiratory Therapy Skills Laboratories (CAMS - Male)</p>
-              <p class="text-slate-500 font-semibold leading-tight">Official Medical Equipment Inventory & Contingency Schedule • ${scopeLabel}</p>
-            </div>
-          </div>
-          <div class="text-right font-arabic text-[10.5px]" dir="rtl">
-            <p class="font-bold text-ksau-700 leading-tight">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
-            <p class="text-slate-500 leading-tight">معامل مهارات العلاج التنفسي — السجل الرسمي</p>
-          </div>
-        </div>
-      `;
-    }
-
-    function buildSheetFooterHtml(pageNumber, totalPages) {
-      const todayStr = new Date().toLocaleDateString('en-GB');
-      return `
-        <div class="mt-3 pt-2 border-t border-slate-300 flex items-center justify-between text-[10px] text-slate-600 font-medium">
-          <span><strong>KSAU-HS</strong> • CAMS-Male • Respiratory Therapy Skills Labs</span>
-          <span>Supervisor: <strong>Abdulrahman Mufti, RT Specialist</strong> (muftiab@ksau-hs.edu.sa • Ext. 98317)</span>
-          <span class="font-mono font-extrabold text-ksau-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">Date: ${todayStr} • Page ${pageNumber} of ${totalPages}</span>
-        </div>
-      `;
-    }
-
-    function buildInventoryTableHeadHtml() {
-      return `
-        <thead>
-          <tr class="bg-ksau-800 text-white uppercase text-[10px] font-extrabold tracking-wider">
-            <th style="width: 5%;" class="text-center">SN</th>
-            <th style="width: 9%;" class="text-center">Lab Room</th>
-            <th style="width: 24%;" class="text-left">Medical Equipment Description</th>
-            <th style="width: 8%;" class="text-center">HTMS No.</th>
-            <th style="width: 8%;" class="text-center">KU No.</th>
-            <th style="width: 11%;" class="text-left">Model</th>
-            <th style="width: 12%;" class="text-left">Manufacturer</th>
-            <th style="width: 9%;" class="text-center">Status</th>
-            <th style="width: 14%;" class="text-left">Fault Reason & Contingency Action</th>
-          </tr>
-        </thead>
-      `;
-    }
-
-    function buildEquipmentGroupRowsHtml(item) {
-      const linkedLog = state.logs.find(l => l.deviceId === item.id);
-      const isNonOp = item.status !== 'Operational';
-      const statusCellClass = item.status === 'Operational'
-        ? 'text-emerald-800 bg-emerald-50/70 font-extrabold'
-        : (item.status === 'Not Available' ? 'text-rose-800 bg-rose-50 font-extrabold' : 'text-amber-900 bg-amber-50 font-extrabold');
-
-      const faultDetailsHtml = (isNonOp && linkedLog)
-        ? `<div class="text-left text-[9.5px] leading-tight"><span class="font-extrabold text-rose-800">Fault:</span> ${linkedLog.issue}<br/><span class="font-extrabold text-ksau-800">Action:</span> ${linkedLog.action}</div>`
-        : `<span class="text-slate-400 text-center block">—</span>`;
-
-      const snFormatted = `#${String(item.sn).padStart(2, '0')}`;
-
-      let html = `
-        <tr class="bg-white text-[10px] text-slate-900">
-          <td class="font-mono font-extrabold text-center text-ksau-800 bg-slate-50">${snFormatted}</td>
-          <td class="font-mono font-bold text-center text-slate-800">${item.lab}</td>
-          <td class="font-bold text-slate-900">${item.desc}</td>
-          <td class="font-mono font-bold text-center text-slate-900">${item.htms}</td>
-          <td class="font-mono text-center text-slate-800">${item.ku}</td>
-          <td class="font-semibold text-slate-800">${item.model}</td>
-          <td class="text-slate-700">${item.mfg}</td>
-          <td class="text-center text-[9.5px] ${statusCellClass}">${item.status}</td>
-          <td>${faultDetailsHtml}</td>
-        </tr>
-      `;
-
-      (item.subs || []).forEach((sub, sIdx) => {
-        html += `
-          <tr class="bg-slate-50/90 text-[9.5px] text-slate-700">
-            <td class="font-mono text-center text-indigo-700 font-bold">${item.sn}.${sIdx + 1}</td>
-            <td class="font-mono text-center text-slate-500">${item.lab}</td>
-            <td class="pl-4 italic font-medium text-slate-700">↳ Sub-Component: ${sub.desc}</td>
-            <td class="font-mono text-center text-slate-400">Sub-Unit</td>
-            <td class="font-mono text-center text-slate-700 font-semibold">${sub.ku}</td>
-            <td class="text-slate-700">${sub.model}</td>
-            <td class="text-slate-600">${sub.mfg || item.mfg}</td>
-            <td class="text-center text-indigo-700 font-semibold">Attached</td>
-            <td class="text-center text-slate-400">—</td>
-          </tr>
-        `;
-      });
-
-      return html;
-    }
-
     window.renderPrintableReportContent = function() {
       const labFilter = document.getElementById('report-lab-select').value;
-      const targetLabs = labFilter === 'ALL'
-        ? state.labs
-        : state.labs.filter(l => l.code === labFilter);
+      const items = labFilter === 'ALL' ? state.inventory : state.inventory.filter(i => i.lab === labFilter);
+      const logs = labFilter === 'ALL' ? state.logs : state.logs.filter(l => l.lab === labFilter);
+      const totalSubs = items.reduce((s, x) => s + (x.subs?.length || 0), 0);
 
-      const allScopedItems = labFilter === 'ALL'
-        ? state.inventory
-        : state.inventory.filter(i => i.lab === labFilter);
-      const allScopedLogs = labFilter === 'ALL'
-        ? state.logs
-        : state.logs.filter(l => l.lab === labFilter);
-      const totalScopedSubs = allScopedItems.reduce((s, x) => s + (x.subs?.length || 0), 0);
-      const scopeLabel = labFilter === 'ALL'
-        ? `All Labs (${state.labs.map(l => l.code).join(' & ')})`
-        : `Laboratory ${labFilter}`;
+      document.getElementById('report-lab-meta').textContent =
+        `Lab Scope: ${labFilter === 'ALL' ? 'CM-01-158 & CM-01-162 (All Labs)' : labFilter} • Parent Systems: ${items.length} • Sub-Components: ${totalSubs} • Active Contingency Logs: ${logs.length}`;
 
-      // Build discrete page descriptors so we know total page count for "Page X of Y"
-      const sheets = [];
-      let isVeryFirstSheet = true;
+      let rowsHtml = '';
+      items.forEach(item => {
+        const linkedLog = state.logs.find(l => l.deviceId === item.id);
+        const faultDetailsHtml = (item.status !== 'Operational' && linkedLog)
+          ? `<div class="text-left text-[10px] leading-snug"><strong class="text-rose-800">Reason:</strong> ${linkedLog.issue}<br/><strong class="text-ksau-800">Action:</strong> ${linkedLog.action}</div>`
+          : `<span class="text-slate-400">—</span>`;
 
-      targetLabs.forEach(labObj => {
-        const labItems = state.inventory
-          .filter(i => i.lab === labObj.code)
-          .sort((a, b) => Number(a.sn) - Number(b.sn));
-
-        if (labItems.length === 0) return;
-
-        const labSubsCount = labItems.reduce((s, x) => s + (x.subs?.length || 0), 0);
-        const labOpCount = labItems.filter(i => i.status === 'Operational').length;
-        const labFaultCount = labItems.filter(i => i.status !== 'Operational').length;
-
-        let currentChunk = [];
-        let currentWeight = 0;
-        let partIndex = 1;
-
-        labItems.forEach(item => {
-          const subCount = item.subs ? item.subs.length : 0;
-          const hasFaultText = item.status !== 'Operational' && state.logs.some(l => l.deviceId === item.id);
-          // Weight calculation keeps each sheet comfortably inside 1 A4 Landscape page
-          const itemWeight = 1 + (subCount * 0.68) + (hasFaultText ? 0.55 : 0);
-          const maxBudget = isVeryFirstSheet ? 10.2 : 12.2;
-
-          if (currentChunk.length > 0 && (currentWeight + itemWeight) > maxBudget) {
-            sheets.push({
-              type: 'inventory',
-              isFirstSheet: isVeryFirstSheet,
-              labObj,
-              partIndex,
-              labTotalParts: 0, // filled in below
-              labItemsCount: labItems.length,
-              labSubsCount,
-              labOpCount,
-              labFaultCount,
-              items: currentChunk
-            });
-            isVeryFirstSheet = false;
-            partIndex++;
-            currentChunk = [item];
-            currentWeight = itemWeight;
-          } else {
-            currentChunk.push(item);
-            currentWeight += itemWeight;
-          }
+        rowsHtml += `
+          <tr class="border-b border-slate-300 bg-white">
+            <td class="py-1.5 px-2 font-mono font-bold text-center border-r border-slate-300">${item.lab}<br/>SN ${item.sn}</td>
+            <td class="py-1.5 px-2 font-bold border-r border-slate-300">${item.desc}</td>
+            <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${item.htms}</td>
+            <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${item.ku}</td>
+            <td class="py-1.5 px-2 border-r border-slate-300">${item.model}</td>
+            <td class="py-1.5 px-2 border-r border-slate-300">${item.mfg}</td>
+            <td class="py-1.5 px-2 font-bold text-center border-r border-slate-300">${item.status}</td>
+            <td class="py-1.5 px-2">${faultDetailsHtml}</td>
+          </tr>
+        `;
+        (item.subs || []).forEach(sub => {
+          rowsHtml += `
+            <tr class="border-b border-slate-200 bg-slate-50 text-slate-700">
+              <td class="py-1 px-2 text-center font-mono text-[10px] border-r border-slate-300">↳ Sub</td>
+              <td class="py-1 px-2 pl-5 italic border-r border-slate-300">• ${sub.desc}</td>
+              <td class="py-1 px-2 text-center font-mono border-r border-slate-300">—</td>
+              <td class="py-1 px-2 text-center font-mono border-r border-slate-300">${sub.ku}</td>
+              <td class="py-1 px-2 border-r border-slate-300">${sub.model}</td>
+              <td class="py-1 px-2 border-r border-slate-300">${sub.mfg || item.mfg}</td>
+              <td class="py-1 px-2 text-center text-[10px] border-r border-slate-300">Attached</td>
+              <td class="py-1 px-2 text-center text-slate-400 text-[10px]">—</td>
+            </tr>
+          `;
         });
-
-        if (currentChunk.length > 0) {
-          sheets.push({
-            type: 'inventory',
-            isFirstSheet: isVeryFirstSheet,
-            labObj,
-            partIndex,
-            labTotalParts: 0,
-            labItemsCount: labItems.length,
-            labSubsCount,
-            labOpCount,
-            labFaultCount,
-            items: currentChunk
-          });
-          isVeryFirstSheet = false;
-        }
-
-        // Stamp total parts for this lab
-        const labSheets = sheets.filter(s => s.type === 'inventory' && s.labObj.code === labObj.code);
-        labSheets.forEach(s => { s.labTotalParts = labSheets.length; });
       });
 
-      // Add Dedicated Final Sheet for Contingency & Equipment Fault Logbook + Official RT Specialist Sign-Off
-      sheets.push({
-        type: 'contingency_and_signoff',
-        isFirstSheet: isVeryFirstSheet,
-        logs: allScopedLogs
-      });
+      document.getElementById('report-table-container').innerHTML = `
+        <table class="w-full text-[10.5px] border border-slate-400 border-collapse">
+          <thead>
+            <tr class="bg-ksau-800 text-white uppercase">
+              <th class="py-2 px-2 border border-slate-400">Lab / SN</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Description</th>
+              <th class="py-2 px-2 border border-slate-400">HTMS No.</th>
+              <th class="py-2 px-2 border border-slate-400">KU No.</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Model</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Manufacturer</th>
+              <th class="py-2 px-2 border border-slate-400">Status</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Fault Reason & Contingency Action</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
 
-      const totalPages = sheets.length;
-      let finalHtml = '';
+      if (logs.length === 0) {
+        document.getElementById('report-contingency-container').innerHTML = `
+          <div class="p-3 border border-slate-300 rounded text-xs text-slate-500 text-center">
+            No active contingency issues recorded for this lab scope. All systems are Operational.
+          </div>
+        `;
+      } else {
+        const logRowsHtml = logs.map(l => `
+          <tr class="border-b border-slate-300 bg-white">
+            <td class="py-1.5 px-2 font-mono font-bold text-center border-r border-slate-300">${l.id}</td>
+            <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${l.lab}</td>
+            <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${l.htms} / ${l.ku}</td>
+            <td class="py-1.5 px-2 font-bold border-r border-slate-300">${l.deviceName}</td>
+            <td class="py-1.5 px-2 font-bold text-center border-r border-slate-300">${l.status}</td>
+            <td class="py-1.5 px-2 border-r border-slate-300">${l.issue}</td>
+            <td class="py-1.5 px-2 border-r border-slate-300">${l.action}</td>
+            <td class="py-1.5 px-2 text-center">${l.specialist || 'Abdulrahman Mufti'}<br/><span class="text-[9px] font-mono">${l.timestamp}</span></td>
+          </tr>
+        `).join('');
 
-      sheets.forEach((sheet, idx) => {
-        const pageNum = idx + 1;
-        const isLastPage = pageNum === totalPages;
-        const headerBlock = sheet.isFirstSheet
-          ? buildOfficialLetterheadHtml(scopeLabel, allScopedItems.length, totalScopedSubs, allScopedLogs.length)
-          : buildCompactRunningHeaderHtml(scopeLabel);
-
-        if (sheet.type === 'inventory') {
-          const lab = sheet.labObj;
-          const partLabel = sheet.labTotalParts > 1
-            ? `Part ${sheet.partIndex} of ${sheet.labTotalParts}`
-            : 'Complete Lab Schedule';
-
-          const rowsHtml = sheet.items.map(item => buildEquipmentGroupRowsHtml(item)).join('');
-
-          finalHtml += `
-            <div class="report-a4-sheet">
-              <div>
-                ${headerBlock}
-                <!-- Laboratory Section Banner -->
-                <div class="mb-2.5 px-3.5 py-2 rounded-lg bg-slate-900 text-white flex flex-wrap items-center justify-between gap-2">
-                  <div class="flex items-center gap-2.5">
-                    <span class="px-2.5 py-0.5 rounded bg-ksau-goldbright text-ksau-950 font-mono text-xs font-extrabold">${lab.code}</span>
-                    <span class="text-xs font-extrabold tracking-wide uppercase">${lab.name}</span>
-                    <span class="text-[10px] text-emerald-300 font-mono">(${partLabel})</span>
-                  </div>
-                  <div class="flex items-center gap-3 text-[10px] font-semibold">
-                    <span>Parent Systems: <strong>${sheet.labItemsCount}</strong></span>
-                    <span>•</span>
-                    <span>Sub-Components: <strong>${sheet.labSubsCount}</strong></span>
-                    <span>•</span>
-                    <span class="text-emerald-300">Operational: <strong>${sheet.labOpCount}</strong></span>
-                    <span>•</span>
-                    <span class="text-amber-300">Non-Operational: <strong>${sheet.labFaultCount}</strong></span>
-                  </div>
-                </div>
-
-                <!-- Fixed-Layout Paginated Equipment Table -->
-                <table class="report-fixed-table">
-                  ${buildInventoryTableHeadHtml()}
-                  <tbody>
-                    ${rowsHtml}
-                  </tbody>
-                </table>
-              </div>
-              ${buildSheetFooterHtml(pageNum, totalPages)}
-            </div>
-            ${!isLastPage ? '<div class="html2pdf__page-break"></div>' : ''}
-          `;
-        } else if (sheet.type === 'contingency_and_signoff') {
-          let contingencyBodyHtml = '';
-          if (sheet.logs.length === 0) {
-            contingencyBodyHtml = `
-              <div class="p-5 border-2 border-emerald-300 bg-emerald-50/50 rounded-xl text-center space-y-1 my-2">
-                <p class="text-xs font-extrabold text-emerald-900 uppercase">All Laboratory Medical Equipment Systems Verified Operational</p>
-                <p class="text-[11px] text-emerald-800">Zero active contingency faults or unavailable devices recorded for ${scopeLabel}.</p>
-              </div>
-            `;
-          } else {
-            const logRowsHtml = sheet.logs.map((l, lIdx) => `
-              <tr class="bg-white text-[10px] text-slate-900">
-                <td class="font-mono font-bold text-center bg-slate-50">#${lIdx + 1}<br/><span class="text-[9px] text-slate-500">${l.id}</span></td>
-                <td class="font-mono font-bold text-center">${l.lab}</td>
-                <td class="font-mono text-center">HTMS: <strong>${l.htms}</strong><br/>KU: <strong>${l.ku}</strong></td>
-                <td class="font-bold text-slate-900">${l.deviceName}</td>
-                <td class="font-extrabold text-center ${l.status === 'Not Available' ? 'text-rose-800 bg-rose-50' : 'text-amber-900 bg-amber-50'}">${l.status}</td>
-                <td class="text-slate-800">${l.issue}</td>
-                <td class="text-ksau-900 font-medium">${l.action}</td>
-                <td class="text-center text-[9.5px]"><strong>${l.specialist || 'Abdulrahman Mufti'}</strong><br/><span class="font-mono text-slate-500">${l.timestamp}</span></td>
+        document.getElementById('report-contingency-container').innerHTML = `
+          <table class="w-full text-[10.5px] border border-slate-400 border-collapse">
+            <thead>
+              <tr class="bg-amber-800 text-white uppercase">
+                <th class="py-2 px-2 border border-slate-400">Log ID</th>
+                <th class="py-2 px-2 border border-slate-400">Lab</th>
+                <th class="py-2 px-2 border border-slate-400">HTMS / KU</th>
+                <th class="py-2 px-2 border border-slate-400 text-left">Device</th>
+                <th class="py-2 px-2 border border-slate-400">Status</th>
+                <th class="py-2 px-2 border border-slate-400 text-left">Observation</th>
+                <th class="py-2 px-2 border border-slate-400 text-left">Contingency Action Plan</th>
+                <th class="py-2 px-2 border border-slate-400">Logged By</th>
               </tr>
-            `).join('');
-
-            contingencyBodyHtml = `
-              <table class="report-fixed-table">
-                <thead>
-                  <tr class="bg-amber-800 text-white uppercase text-[10px] font-extrabold">
-                    <th style="width: 7%;" class="text-center">Log #</th>
-                    <th style="width: 8%;" class="text-center">Lab Room</th>
-                    <th style="width: 10%;" class="text-center">HTMS / KU</th>
-                    <th style="width: 20%;" class="text-left">Medical Device Description</th>
-                    <th style="width: 10%;" class="text-center">Status</th>
-                    <th style="width: 18%;" class="text-left">Fault Reason (Observation)</th>
-                    <th style="width: 17%;" class="text-left">Contingency Action Plan</th>
-                    <th style="width: 10%;" class="text-center">Logged By</th>
-                  </tr>
-                </thead>
-                <tbody>${logRowsHtml}</tbody>
-              </table>
-            `;
-          }
-
-          finalHtml += `
-            <div class="report-a4-sheet">
-              <div>
-                ${headerBlock}
-                <div class="mb-2.5 px-3.5 py-2 rounded-lg bg-amber-900 text-white flex items-center justify-between">
-                  <span class="text-xs font-extrabold uppercase tracking-wider">Section 2 — Contingency & Equipment Fault Logbook</span>
-                  <span class="text-[10.5px] font-mono">Active Contingency Records: ${sheet.logs.length}</span>
-                </div>
-                ${contingencyBodyHtml}
-
-                <!-- Official Summary & RT Specialist Verification Sign-Off -->
-                <div class="mt-6 pt-4 border-t-2 border-slate-300 grid grid-cols-1 sm:grid-cols-2 gap-6 items-start text-xs">
-                  <div class="border border-slate-300 rounded-xl p-4 bg-slate-50 space-y-1.5">
-                    <p class="font-extrabold uppercase text-slate-800 border-b border-slate-200 pb-1.5 mb-2">Official Inventory Summary (${scopeLabel})</p>
-                    <p class="flex justify-between"><span>Total Verified Parent Systems:</span> <strong>${allScopedItems.length} Units</strong></p>
-                    <p class="flex justify-between"><span>Total Attached Sub-Components:</span> <strong>${totalScopedSubs} Modules</strong></p>
-                    <p class="flex justify-between text-emerald-800"><span>Operational Systems Ready for Training:</span> <strong>${allScopedItems.filter(i => i.status === 'Operational').length} Units</strong></p>
-                    <p class="flex justify-between text-amber-800"><span>Systems in Contingency / Not Available:</span> <strong>${allScopedItems.filter(i => i.status !== 'Operational').length} Units</strong></p>
-                  </div>
-
-                  <div class="border-2 border-ksau-600 rounded-xl p-4 bg-ksau-50/50 space-y-1">
-                    <p class="font-extrabold uppercase text-ksau-800 border-b border-ksau-200 pb-1.5 mb-2">RT Specialist Verification & Sign-Off</p>
-                    <p><strong>Name:</strong> Abdulrahman Mufti</p>
-                    <p><strong>Title:</strong> RT Specialist</p>
-                    <p><strong>Email:</strong> <span class="font-mono">muftiab@ksau-hs.edu.sa</span></p>
-                    <p><strong>Phone:</strong> <span class="font-mono">0114299999 ext. 98317</span></p>
-                    <p class="pt-2 mt-1 border-t border-ksau-200"><strong>Official Sign-Off:</strong> <span class="italic font-serif text-ksau-900 font-bold">Abdulrahman Mufti — RT Specialist</span></p>
-                  </div>
-                </div>
-              </div>
-              ${buildSheetFooterHtml(pageNum, totalPages)}
-            </div>
-          `;
-        }
-      });
-
-      document.getElementById('printable-report-area').innerHTML = finalHtml;
-      renderAllLogos();
+            </thead>
+            <tbody>${logRowsHtml}</tbody>
+          </table>
+        `;
+      }
     };
 
     window.downloadOfficialPdf = async function() {
-      const container = document.getElementById('printable-report-area');
+      const element = document.getElementById('printable-report-area');
       const labFilter = document.getElementById('report-lab-select').value;
-      container.classList.add('report-Exporting');
-      showToast('Generating Pre-Paginated Official A4 PDF...');
-
-      try {
-        const opt = {
-          margin: [6, 6, 6, 6],
-          filename: `KSAU_HS_RT_Inventory_And_Contingency_Report_${labFilter}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-          pagebreak: { mode: ['css', 'legacy'] },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-        };
-        await html2pdf().set(opt).from(container).save();
-        showToast('Official A4 Landscape PDF downloaded');
-      } finally {
-        container.classList.remove('report-Exporting');
-      }
+      showToast('Generating Official KSAU-HS A4 PDF...');
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `KSAU_HS_RT_Inventory_And_Contingency_Report_${labFilter}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+      await html2pdf().set(opt).from(element).save();
+      showToast('Official PDF downloaded');
     };
 
     window.triggerSafePrint = function() {
