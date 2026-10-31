@@ -1158,11 +1158,52 @@
             <input type="text" id="edit-prof-sec-a" required class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold" />
           </div>
         </div>
-        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
-          <button type="button" onclick="closeEditProfileModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save My Profile</button>
+        <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <button type="button" onclick="openDeleteMyProfileModal()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold flex items-center gap-1.5 transition">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>Delete My Profile</span>
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeEditProfileModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">Cancel</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save My Profile</button>
+          </div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 7B: DELETE MY OWN PROFILE CONFIRMATION ================= -->
+  <div id="delete-profile-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-rose-200 animate-fade-up">
+      <div class="bg-rose-700 text-white px-6 py-4 flex items-center justify-between border-b-2 border-rose-400">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="user-x" class="w-5 h-5 text-rose-200"></i>
+          <h3 class="text-sm font-extrabold">Delete My Profile Permanently</h3>
+        </div>
+        <button type="button" onclick="closeDeleteMyProfileModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+          <p class="font-extrabold uppercase tracking-wider text-[10px] text-rose-700">Account Selected for Permanent Deletion:</p>
+          <p id="delete-prof-title" class="text-sm font-extrabold text-slate-900"></p>
+          <p id="delete-prof-meta" class="font-mono text-[11px] text-slate-600"></p>
+        </div>
+        <div id="delete-prof-master-warning" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold">
+          The Master RT Specialist account (Abdulrahman Mufti) is the primary system owner and cannot be deleted.
+        </div>
+        <p id="delete-prof-desc" class="text-xs text-slate-600 leading-relaxed">
+          Are you sure you want to permanently delete your staff profile and credentials from the KSAU-HS Respiratory Therapy Skills Lab portal? You will be signed out immediately.
+        </p>
+        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closeDeleteMyProfileModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancel</button>
+          <button type="button" id="btn-confirm-delete-prof" onclick="confirmDeleteMyProfile()" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow flex items-center gap-1.5">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>Confirm & Delete My Profile</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2631,6 +2672,11 @@
                   <p class="text-[11px] font-mono text-slate-500">${u.email || 'muftiab@ksau-hs.edu.sa'}</p>
                 </div>
               </div>
+              ${isMe && !isMasterAcc ? `
+                <button type="button" onclick="openDeleteMyProfileModal()" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Delete My Profile">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              ` : ''}
             </div>
 
             <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
@@ -2640,7 +2686,7 @@
               <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${u.perms?.manageUsers ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">Manage Staff: ${u.perms?.manageUsers ? 'Yes' : 'No'}</span>
             </div>
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
               ${isMe ? `
                 <button type="button" onclick="openEditProfileModal()" class="flex-1 py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-bold flex items-center justify-center gap-1 transition">
                   <i data-lucide="user-pen" class="w-3.5 h-3.5"></i>
@@ -2649,6 +2695,10 @@
                 <button type="button" onclick="openMyPasswordModal()" class="flex-1 py-1.5 px-2.5 rounded-xl bg-ksau-50 hover:bg-ksau-100 text-ksau-800 border border-ksau-200 text-[11px] font-bold flex items-center justify-center gap-1 transition">
                   <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
                   <span>Reset My Password</span>
+                </button>
+                <button type="button" onclick="openDeleteMyProfileModal()" class="w-full sm:w-auto py-1.5 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-extrabold flex items-center justify-center gap-1 transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  <span>Delete My Profile</span>
                 </button>
               ` : `
                 <div class="w-full py-1.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-400 text-[11px] font-semibold flex items-center justify-center gap-1.5">
@@ -3047,6 +3097,55 @@
       refreshAllViews();
       await persistState();
       showToast('Your profile & security question have been updated');
+    };
+
+    // Delete My Own Profile Modal & Handler (Strictly for Logged-In User Only)
+    window.openDeleteMyProfileModal = function() {
+      const u = state.currentUser;
+      if (!u) return;
+      closeEditProfileModal();
+      const isMasterAcc = u.isMaster || u.username.toLowerCase() === 'amufti';
+
+      document.getElementById('delete-prof-title').textContent = `${u.name} (${u.role})`;
+      document.getElementById('delete-prof-meta').textContent = `Username: @${u.username} • Email: ${u.email || 'N/A'}`;
+
+      const masterWarn = document.getElementById('delete-prof-master-warning');
+      const descEl = document.getElementById('delete-prof-desc');
+      const confirmBtn = document.getElementById('btn-confirm-delete-prof');
+
+      if (isMasterAcc) {
+        masterWarn.classList.remove('hidden');
+        descEl.classList.add('hidden');
+        confirmBtn.classList.add('hidden');
+      } else {
+        masterWarn.classList.add('hidden');
+        descEl.classList.remove('hidden');
+        confirmBtn.classList.remove('hidden');
+      }
+
+      document.getElementById('delete-profile-modal').classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeDeleteMyProfileModal = function() {
+      document.getElementById('delete-profile-modal').classList.add('hidden');
+    };
+
+    window.confirmDeleteMyProfile = async function() {
+      const u = state.currentUser;
+      if (!u) return;
+      if (u.isMaster || u.username.toLowerCase() === 'amufti') {
+        showToast('Master RT Specialist account cannot be deleted');
+        closeDeleteMyProfileModal();
+        return;
+      }
+
+      const deletedUsername = u.username;
+      state.users = state.users.filter(acc => acc.username.toLowerCase() !== deletedUsername.toLowerCase());
+      closeDeleteMyProfileModal();
+      await persistState();
+      handleLogout();
+      showToast('Your profile has been permanently deleted');
     };
 
     // ================= 14. OFFICIAL PRINTABLE REPORT & DIRECT PDF GENERATOR (WITH CONTINGENCY LOG) =================
