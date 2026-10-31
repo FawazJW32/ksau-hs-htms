@@ -80,8 +80,19 @@
 
     @media print {
       body * { visibility: hidden; }
-      #printable-report-area, #printable-report-area * { visibility: visible; }
-      #printable-report-area {
+      body.printing-manual #printable-manual-area,
+      body.printing-manual #printable-manual-area * { visibility: visible; }
+      body.printing-manual #printable-manual-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      body:not(.printing-manual) #printable-report-area,
+      body:not(.printing-manual) #printable-report-area * { visibility: visible; }
+      body:not(.printing-manual) #printable-report-area {
         position: absolute;
         left: 0;
         top: 0;
@@ -350,6 +361,18 @@
             <span data-i18n="resetPasswordBtn">Reset Password</span>
           </button>
 
+          <!-- Interactive First-Time User Tutorial Button -->
+          <button type="button" onclick="openTutorialModal()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition" title="Open Interactive Portal Tutorial">
+            <i data-lucide="help-circle" class="w-4 h-4 text-ksau-goldbright"></i>
+            <span data-i18n="tutorialBtn">Tutorial</span>
+          </button>
+
+          <!-- Printable Contingency Instruction Manual (SOP) Button -->
+          <button type="button" onclick="openManualModal()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition" title="Open Printable Contingency Instruction Manual">
+            <i data-lucide="book-open" class="w-4 h-4 text-ksau-goldbright"></i>
+            <span class="hidden xl:inline" data-i18n="contingencyManualBtn">Contingency Manual</span>
+          </button>
+
           <!-- Language Toggle -->
           <button type="button" onclick="toggleLanguage()" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/15 text-xs font-bold flex items-center gap-1.5 transition">
             <i data-lucide="languages" class="w-4 h-4 text-ksau-goldbright"></i>
@@ -584,6 +607,10 @@
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="openManualModal()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-xs font-extrabold flex items-center gap-1.5 transition">
+              <i data-lucide="book-open" class="w-4 h-4 text-ksau-700"></i>
+              <span data-i18n="contingencyManualBtn">Contingency Manual</span>
+            </button>
             <button type="button" onclick="resetAllEquipmentStatuses()" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-extrabold flex items-center gap-1.5 transition">
               <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
               <span>Backup & Reset All to Operational</span>
@@ -967,9 +994,17 @@
           <div id="eq-subs-container" class="space-y-2"></div>
         </div>
 
-        <div class="pt-4 border-t border-slate-200 flex justify-end gap-2">
-          <button type="button" onclick="closeEquipmentModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save Equipment Record</button>
+        <div class="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <button type="button" id="btn-modal-remove-eq" onclick="triggerRemoveFromEditModal()" class="hidden px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-extrabold flex items-center gap-1.5 transition">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span>Remove Obsolete Equipment</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" onclick="closeEquipmentModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancel</button>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save Equipment Record</button>
+          </div>
         </div>
       </form>
     </div>
@@ -1128,6 +1163,226 @@
           <button type="submit" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-bold shadow">Save My Profile</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 8: DECOMMISSION / REMOVE OBSOLETE EQUIPMENT CONFIRMATION ================= -->
+  <div id="remove-equipment-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-rose-200 animate-fade-up">
+      <div class="bg-rose-700 text-white px-6 py-4 flex items-center justify-between border-b-2 border-rose-400">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="trash-2" class="w-5 h-5 text-rose-200"></i>
+          <h3 class="text-sm font-extrabold">Decommission / Remove Obsolete Equipment</h3>
+        </div>
+        <button type="button" onclick="closeRemoveEquipmentModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-1">
+          <p class="font-extrabold uppercase tracking-wider text-[10px] text-rose-700">Selected Equipment for Decommissioning:</p>
+          <p id="remove-eq-title" class="text-sm font-extrabold text-slate-900"></p>
+          <p id="remove-eq-meta" class="font-mono text-[11px] text-slate-600"></p>
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Are you sure you want to permanently remove this equipment unit (and any attached sub-components) from the active Respiratory Therapy Skills Lab inventory? Use this action when equipment is deemed obsolete or permanently decommissioned.
+        </p>
+        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closeRemoveEquipmentModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Cancel</button>
+          <button type="button" onclick="confirmRemoveEquipment()" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow flex items-center gap-1.5">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span>Confirm & Remove Obsolete Unit</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 9: FIRST-TIME USER INTERACTIVE TUTORIAL (5 STEPS) ================= -->
+  <div id="tutorial-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-white/20 animate-fade-up my-auto">
+      <div class="bg-gradient-to-r from-ksau-900 via-ksau-800 to-ksau-900 text-white px-6 py-4 flex items-center justify-between border-b-2 border-ksau-goldbright">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-ksau-goldbright text-ksau-950 flex items-center justify-center font-extrabold">
+            <i data-lucide="GraduationCap" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold">First-Time User Tutorial & Portal Guide</h3>
+            <p class="text-[11px] text-emerald-200">Quick 5-step walkthrough of the KSAU-HS Respiratory Therapy Inventory & Contingency System</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTutorialModal()" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <!-- Step Progress Indicators -->
+        <div class="flex items-center justify-between gap-2">
+          <button type="button" onclick="goToTutorialStep(0)" id="tut-dot-0" class="flex-1 h-2 rounded-full bg-ksau-600 transition"></button>
+          <button type="button" onclick="goToTutorialStep(1)" id="tut-dot-1" class="flex-1 h-2 rounded-full bg-slate-200 transition"></button>
+          <button type="button" onclick="goToTutorialStep(2)" id="tut-dot-2" class="flex-1 h-2 rounded-full bg-slate-200 transition"></button>
+          <button type="button" onclick="goToTutorialStep(3)" id="tut-dot-3" class="flex-1 h-2 rounded-full bg-slate-200 transition"></button>
+          <button type="button" onclick="goToTutorialStep(4)" id="tut-dot-4" class="flex-1 h-2 rounded-full bg-slate-200 transition"></button>
+        </div>
+
+        <!-- Dynamic Step Body -->
+        <div id="tutorial-step-content" class="min-h-[230px] flex flex-col justify-between bg-slate-50 rounded-2xl p-5 border border-slate-200/90"></div>
+
+        <!-- Footer Controls -->
+        <div class="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
+            <input type="checkbox" id="tut-dont-show-again" class="rounded text-ksau-600 focus:ring-ksau-600" />
+            <span>Don't show automatically on sign-in</span>
+          </label>
+
+          <div class="flex items-center gap-2">
+            <button type="button" id="tut-prev-btn" onclick="prevTutorialStep()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+              ← Previous
+            </button>
+            <button type="button" id="tut-next-btn" onclick="nextTutorialStep()" class="px-5 py-2 rounded-xl bg-ksau-600 hover:bg-ksau-700 text-white text-xs font-extrabold shadow transition">
+              Next Step →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL 10: CONCISE PRINTABLE CONTINGENCY INSTRUCTION MANUAL (SOP) ================= -->
+  <div id="manual-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-100 rounded-3xl shadow-2xl w-full max-w-5xl max-h-[94vh] flex flex-col overflow-hidden border border-white/20">
+      <!-- Top Control Bar -->
+      <div class="bg-ksau-900 text-white px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-b border-ksau-goldbright">
+        <div class="flex items-center gap-3">
+          <i data-lucide="book-open-check" class="w-5 h-5 text-ksau-goldbright"></i>
+          <div>
+            <h3 class="text-sm font-extrabold">Concise Printable Contingency Instruction Manual (SOP)</h3>
+            <p class="text-[11px] text-emerald-200">Single-Page A4 Standard Operating Procedure for Lab Equipment Contingency & Inventory Management</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="downloadManualPdf()" class="px-4 py-2 rounded-xl bg-ksau-goldbright hover:bg-amber-400 text-ksau-950 text-xs font-extrabold flex items-center gap-1.5 shadow-lg transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Download Manual PDF (.pdf)</span>
+          </button>
+          <button type="button" onclick="printManualDoc()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg transition">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span>Print Manual</span>
+          </button>
+          <button type="button" onclick="closeManualModal()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable A4 Manual Sheet -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-8 custom-scroll">
+        <div id="printable-manual-area" class="bg-white text-slate-900 mx-auto max-w-[900px] p-8 rounded-xl shadow-md border border-slate-200 space-y-5">
+          <!-- Official University Letterhead -->
+          <div class="border-b-2 border-ksau-700 pb-4 flex items-center justify-between gap-4">
+            <div class="text-xs space-y-0.5">
+              <p class="font-extrabold text-slate-900 uppercase">Kingdom of Saudi Arabia</p>
+              <p class="font-bold text-ksau-700">King Saud bin Abdulaziz University for Health Sciences</p>
+              <p class="font-semibold text-slate-700">College of Applied Medical Sciences - Male (Central Region)</p>
+              <p class="text-slate-500">Respiratory Therapy Skills Laboratories (CM-01-158 & CM-01-162)</p>
+            </div>
+            <div class="w-16 h-16 shrink-0">
+              <div class="ksau-logo-slot w-full h-full rounded-full overflow-hidden flex items-center justify-center"></div>
+            </div>
+            <div class="text-right font-arabic text-xs space-y-0.5" dir="rtl">
+              <p class="font-extrabold text-slate-900">المملكة العربية السعودية</p>
+              <p class="font-bold text-ksau-700">جامعة الملك سعود بن عبد العزيز للعلوم الصحية</p>
+              <p class="font-semibold text-slate-700">كلية العلوم الطبية التطبيقية - طلاب (المنطقة الوسطى)</p>
+              <p class="text-slate-500">معامل مهارات العلاج التنفسي</p>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <h2 class="text-sm sm:text-base font-extrabold uppercase tracking-wide text-ksau-800 bg-ksau-50 py-2 px-5 rounded-lg border border-ksau-200 inline-block">
+              STANDARD OPERATING PROCEDURE: LAB EQUIPMENT CONTINGENCY & INVENTORY MANUAL
+            </h2>
+            <p class="text-[11px] font-semibold text-slate-500 mt-1">Document Code: KSAU-HS/CAMS-RT/SOP-01 • Effective Scope: Labs CM-01-158 & CM-01-162</p>
+          </div>
+
+          <!-- 6 Concise Operational Sections -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 class="font-extrabold text-ksau-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-ksau-700 text-white text-[10px] flex items-center justify-center">1</span>
+                <span>Purpose & Laboratory Scope</span>
+              </h4>
+              <p class="text-slate-700 leading-relaxed">
+                This instruction manual establishes the standardized protocol for tracking medical equipment readiness, reporting sudden device faults, allocating backup units during clinical simulation sessions, and maintaining an accurate inventory across Respiratory Therapy Skills Labs <strong>CM-01-158</strong> and <strong>CM-01-162</strong>.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 class="font-extrabold text-ksau-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-ksau-700 text-white text-[10px] flex items-center justify-center">2</span>
+                <span>Equipment Status Definitions</span>
+              </h4>
+              <ul class="space-y-1 text-slate-700">
+                <li>• <strong class="text-emerald-700">Operational:</strong> Fully functional and ready for student clinical training.</li>
+                <li>• <strong class="text-amber-700">Contingency / Fault:</strong> Device experienced an operational fault; backup unit allocated.</li>
+                <li>• <strong class="text-rose-700">Not Available:</strong> Temporarily out of service or undergoing external repair.</li>
+                <li class="text-[10.5px] text-slate-500 italic pt-0.5">*Note: Routine calibration & preventive maintenance (PM) are managed directly by HTMS.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-1.5">
+              <h4 class="font-extrabold text-amber-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-amber-700 text-white text-[10px] flex items-center justify-center">3</span>
+                <span>Step-by-Step Procedure When a Device Faults</span>
+              </h4>
+              <ol class="list-decimal list-inside space-y-1 text-slate-800">
+                <li><strong>Access Portal:</strong> Scan the Lab Door QR Code or open the web portal and sign in.</li>
+                <li><strong>Locate Unit:</strong> Filter by Lab (<strong>CM-01-158</strong> or <strong>CM-01-162</strong>) or search by <strong>HTMS # / KU #</strong>.</li>
+                <li><strong>Update Status:</strong> Select <strong>Contingency / Fault</strong> or <strong>Not Available</strong> from the row dropdown (or click <strong>Log Issue</strong>).</li>
+                <li><strong>Document Reason & Backup:</strong> Enter the exact <em>Fault Reason (Observation)</em> and specify the <em>Backup HTMS Unit Assigned</em> so clinical training continues uninterrupted.</li>
+              </ol>
+            </div>
+
+            <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-1.5">
+              <h4 class="font-extrabold text-emerald-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-emerald-700 text-white text-[10px] flex items-center justify-center">4</span>
+                <span>Restoring Status & Auto-Backup Protocol</span>
+              </h4>
+              <ol class="list-decimal list-inside space-y-1 text-slate-800">
+                <li>When a faulty or unavailable unit is repaired and verified ready for lab use, click <strong>Reset Status</strong> on the device row (or <strong>Reset All Statuses to Operational</strong>).</li>
+                <li><strong>Automatic Data Protection:</strong> The portal automatically downloads a timestamped multi-sheet Excel (<code>.xlsx</code>) archive containing all pre-reset fault reasons before clearing the active Contingency Logbook.</li>
+              </ol>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+              <h4 class="font-extrabold text-ksau-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-ksau-700 text-white text-[10px] flex items-center justify-center">5</span>
+                <span>Adding New Units or Removing Obsolete Equipment</span>
+              </h4>
+              <p class="text-slate-700 leading-relaxed">
+                • <strong>New Arrivals:</strong> Click <strong>+ Add Medical Equipment</strong> to register new systems and attach sub-components (Simpads, racks, modules).<br/>
+                • <strong>Obsolete Units:</strong> If an item is permanently decommissioned or deemed obsolete, click the red <strong>Trash (Remove Obsolete)</strong> icon on its row (or inside Edit) and confirm permanent removal.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-ksau-50 border border-ksau-200 space-y-1.5">
+              <h4 class="font-extrabold text-ksau-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <span class="w-5 h-5 rounded-full bg-ksau-800 text-white text-[10px] flex items-center justify-center">6</span>
+                <span>Primary Lab Supervisor & Escalation Contact</span>
+              </h4>
+              <p class="text-slate-800 font-bold">Abdulrahman Mufti — RT Specialist</p>
+              <p class="text-slate-600">College of Applied Medical Sciences (Male) • Central Region</p>
+              <p class="font-mono text-ksau-800 font-bold">Email: muftiab@ksau-hs.edu.sa</p>
+              <p class="font-mono text-slate-800 font-bold">Phone: 0114299999 ext. 98317</p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-300 flex items-center justify-between text-[10px] text-slate-500">
+            <span>Approved By: <strong>Abdulrahman Mufti, RT Specialist</strong></span>
+            <span>King Saud bin Abdulaziz University for Health Sciences (KSAU-HS)</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1367,6 +1622,8 @@
         headerTitle: 'KSAU-HS • Respiratory Therapy Skills Lab Inventory & Contingency',
         headerSub: 'Central Region • College of Applied Medical Sciences (Male) • Labs CM-01-158 & CM-01-162',
         resetPasswordBtn: 'Reset Password',
+        tutorialBtn: 'Tutorial',
+        contingencyManualBtn: 'Contingency Manual',
         qrAccessBtn: 'QR Access',
         exportExcelBtn: 'Export Excel (.xlsx)',
         officialReportBtn: 'Official Report / Print',
@@ -1438,6 +1695,8 @@
         headerTitle: 'KSAU-HS • نظام جرد وطوارئ معامل مهارات العلاج التنفسي',
         headerSub: 'المنطقة الوسطى • كلية العلوم الطبية التطبيقية (طلاب) • معامل CM-01-158 و CM-01-162',
         resetPasswordBtn: 'تغيير كلمة المرور',
+        tutorialBtn: 'دليل الاستخدام',
+        contingencyManualBtn: 'دليل الطوارئ',
         qrAccessBtn: 'رمز QR للجوال',
         exportExcelBtn: 'تصدير إكسل (.xlsx)',
         officialReportBtn: 'التقرير الرسمي / طباعة',
@@ -1497,7 +1756,8 @@
     };
 
     // ================= 4. APPLICATION STATE =================
-    const LOCAL_STORAGE_KEY = 'ksau_hs_rt_htms_portal_v6';
+    const LOCAL_STORAGE_KEY = 'ksau_hs_rt_htms_portal_v7';
+    const TUTORIAL_SEEN_KEY = 'ksau_hs_rt_tutorial_seen_v1';
 
     let state = {
       lang: 'en',
@@ -1507,6 +1767,8 @@
       expandAll: false,
       expandedRows: {},
       recoveryTargetUser: null,
+      pendingRemoveId: null,
+      tutorialStep: 0,
       labs: JSON.parse(JSON.stringify(INITIAL_LABS)),
       inventory: JSON.parse(JSON.stringify(INITIAL_INVENTORY)),
       logs: JSON.parse(JSON.stringify(INITIAL_LOGS)),
@@ -1664,7 +1926,7 @@
         db = firebase.firestore(app);
         isCloudConnected = true;
 
-        const stateDocRef = db.collection('htms_portal').doc('master_v3');
+        const stateDocRef = db.collection('htms_portal').doc('master_v4');
         stateDocRef.onSnapshot((snap) => {
           if (snap.exists) {
             const data = snap.data();
@@ -1702,7 +1964,7 @@
       saveLocalBackup();
       if (isCloudConnected && db) {
         try {
-          await db.collection('htms_portal').doc('master_v3').set({
+          await db.collection('htms_portal').doc('master_v4').set({
             labs: JSON.stringify(state.labs),
             inventory: JSON.stringify(state.inventory),
             logs: JSON.stringify(state.logs),
@@ -1780,6 +2042,7 @@
       document.getElementById('app-shell').classList.remove('hidden');
       updateUserHeaderUI();
       refreshAllViews();
+      checkAndLaunchFirstTimeTutorial();
     };
 
     window.handlePortalRegister = async function(e) {
@@ -1835,6 +2098,7 @@
       document.getElementById('app-shell').classList.remove('hidden');
       updateUserHeaderUI();
       refreshAllViews();
+      checkAndLaunchFirstTimeTutorial();
       showToast(`Welcome, ${newAcc.name}! Your account & security question are active.`);
     };
 
@@ -2203,6 +2467,9 @@
                   <button type="button" onclick="openEquipmentModal('${item.id}')" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition" title="Edit Device">
                     <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                   </button>
+                  <button type="button" onclick="openRemoveEquipmentModal('${item.id}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Remove / Decommission Obsolete Equipment">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
                 ` : ''}
               </div>
             </td>
@@ -2418,6 +2685,7 @@
       labSelect.innerHTML = state.labs.map(l => `<option value="${l.code}">${l.code} — ${l.name}</option>`).join('');
       const subsBox = document.getElementById('eq-subs-container');
       subsBox.innerHTML = '';
+      const removeBtn = document.getElementById('btn-modal-remove-eq');
 
       if (editId) {
         const item = state.inventory.find(i => i.id === editId);
@@ -2436,12 +2704,14 @@
         document.getElementById('eq-log-issue').value = existingLog ? existingLog.issue : '';
         document.getElementById('eq-log-action').value = existingLog ? existingLog.action : '';
         (item.subs || []).forEach(s => addSubComponentField(s));
+        if (removeBtn) removeBtn.classList.remove('hidden');
       } else {
         document.getElementById('eq-modal-title').textContent = 'Add New Medical Equipment';
         document.getElementById('eq-edit-id').value = '';
         document.getElementById('equipment-form').reset();
         document.getElementById('eq-log-issue').value = '';
         document.getElementById('eq-log-action').value = '';
+        if (removeBtn) removeBtn.classList.add('hidden');
       }
       toggleEqModalContingencyFields();
       document.getElementById('equipment-modal').classList.remove('hidden');
@@ -2450,6 +2720,44 @@
 
     window.closeEquipmentModal = function() {
       document.getElementById('equipment-modal').classList.add('hidden');
+    };
+
+    // Decommission / Remove Obsolete Equipment Workflow
+    window.triggerRemoveFromEditModal = function() {
+      const editId = document.getElementById('eq-edit-id').value;
+      if (!editId) return;
+      closeEquipmentModal();
+      openRemoveEquipmentModal(editId);
+    };
+
+    window.openRemoveEquipmentModal = function(itemId) {
+      const item = state.inventory.find(i => i.id === itemId);
+      if (!item) return;
+      state.pendingRemoveId = itemId;
+      document.getElementById('remove-eq-title').textContent = `${item.desc} (${item.model})`;
+      document.getElementById('remove-eq-meta').textContent = `Lab: ${item.lab} • SN ${item.sn} • HTMS #${item.htms} • KU #${item.ku}`;
+      document.getElementById('remove-equipment-modal').classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeRemoveEquipmentModal = function() {
+      state.pendingRemoveId = null;
+      document.getElementById('remove-equipment-modal').classList.add('hidden');
+    };
+
+    window.confirmRemoveEquipment = async function() {
+      if (!state.pendingRemoveId) return;
+      const targetId = state.pendingRemoveId;
+      const item = state.inventory.find(i => i.id === targetId);
+      const label = item ? `${item.desc} (HTMS #${item.htms})` : 'Equipment';
+
+      state.inventory = state.inventory.filter(i => i.id !== targetId);
+      state.logs = state.logs.filter(l => l.deviceId !== targetId);
+
+      closeRemoveEquipmentModal();
+      refreshAllViews();
+      await persistState();
+      showToast(`Removed obsolete unit: ${label}`);
     };
 
     window.addSubComponentField = function(sub = { desc: '', ku: 'NA', model: 'NA', mfg: '' }) {
@@ -2768,6 +3076,11 @@
 
       let rowsHtml = '';
       items.forEach(item => {
+        const linkedLog = state.logs.find(l => l.deviceId === item.id);
+        const faultDetailsHtml = (item.status !== 'Operational' && linkedLog)
+          ? `<div class="text-left text-[10px] leading-snug"><strong class="text-rose-800">Reason:</strong> ${linkedLog.issue}<br/><strong class="text-ksau-800">Action:</strong> ${linkedLog.action}</div>`
+          : `<span class="text-slate-400">—</span>`;
+
         rowsHtml += `
           <tr class="border-b border-slate-300 bg-white">
             <td class="py-1.5 px-2 font-mono font-bold text-center border-r border-slate-300">${item.lab}<br/>SN ${item.sn}</td>
@@ -2776,7 +3089,8 @@
             <td class="py-1.5 px-2 font-mono text-center border-r border-slate-300">${item.ku}</td>
             <td class="py-1.5 px-2 border-r border-slate-300">${item.model}</td>
             <td class="py-1.5 px-2 border-r border-slate-300">${item.mfg}</td>
-            <td class="py-1.5 px-2 font-bold text-center">${item.status}</td>
+            <td class="py-1.5 px-2 font-bold text-center border-r border-slate-300">${item.status}</td>
+            <td class="py-1.5 px-2">${faultDetailsHtml}</td>
           </tr>
         `;
         (item.subs || []).forEach(sub => {
@@ -2788,14 +3102,15 @@
               <td class="py-1 px-2 text-center font-mono border-r border-slate-300">${sub.ku}</td>
               <td class="py-1 px-2 border-r border-slate-300">${sub.model}</td>
               <td class="py-1 px-2 border-r border-slate-300">${sub.mfg || item.mfg}</td>
-              <td class="py-1 px-2 text-center text-[10px]">Attached</td>
+              <td class="py-1 px-2 text-center text-[10px] border-r border-slate-300">Attached</td>
+              <td class="py-1 px-2 text-center text-slate-400 text-[10px]">—</td>
             </tr>
           `;
         });
       });
 
       document.getElementById('report-table-container').innerHTML = `
-        <table class="w-full text-[11px] border border-slate-400 border-collapse">
+        <table class="w-full text-[10.5px] border border-slate-400 border-collapse">
           <thead>
             <tr class="bg-ksau-800 text-white uppercase">
               <th class="py-2 px-2 border border-slate-400">Lab / SN</th>
@@ -2805,6 +3120,7 @@
               <th class="py-2 px-2 border border-slate-400 text-left">Model</th>
               <th class="py-2 px-2 border border-slate-400 text-left">Manufacturer</th>
               <th class="py-2 px-2 border border-slate-400">Status</th>
+              <th class="py-2 px-2 border border-slate-400 text-left">Fault Reason & Contingency Action</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -2867,7 +3183,189 @@
     };
 
     window.triggerSafePrint = function() {
+      document.body.classList.remove('printing-manual');
       window.print();
+    };
+
+    // ================= 14B. FIRST-TIME USER INTERACTIVE TUTORIAL & PRINTABLE CONTINGENCY MANUAL =================
+    const TUTORIAL_STEPS = [
+      {
+        step: 1,
+        icon: 'flask-conical',
+        title: '1. Filtering Skills Labs & Expanding Sub-Components',
+        desc: 'Switch effortlessly between Combined All Labs, Lab CM-01-158, and Lab CM-01-162 using the top Lab Filter Cards. Many parent devices (such as Simlink Manikins or Physiologic Monitors) include attached sub-components (Simpads, Racks, Modules).',
+        bullets: [
+          'Click any Lab Card at the top to filter KPIs and equipment rows for that specific room.',
+          'Click the purple "Sub-Components Attached" badge on an item (or "Expand All Sub-Components") to inspect attached modules and KU numbers.'
+        ]
+      },
+      {
+        step: 2,
+        icon: 'alert-triangle',
+        title: '2. Updating Equipment Status & Logging Fault Reasons',
+        desc: 'Every device tracks 3 clear operational states: Operational, Contingency / Fault, or Not Available (routine calibration & preventive maintenance are handled by HTMS).',
+        bullets: [
+          'Use the inline Status Dropdown on any row (or click "Log Issue") to mark a unit as Contingency / Fault or Not Available.',
+          'Enter the Fault Reason (Observation) and the Contingency Action Plan / Backup Unit Assigned. This automatically syncs to the Contingency Logbook and Official Report.'
+        ]
+      },
+      {
+        step: 3,
+        icon: 'rotate-ccw',
+        title: '3. Restoring Operational Status & Automatic Excel Backups',
+        desc: 'Never lose historical fault data when resetting equipment back to Operational status.',
+        bullets: [
+          'Click the green "Reset Status" button on a faulty unit—or "Reset All Statuses to Operational" in the top bar—once equipment is ready for clinical training.',
+          'Before clearing the resolved fault log, the system automatically downloads a timestamped multi-sheet Excel (.xlsx) backup to your computer.'
+        ]
+      },
+      {
+        step: 4,
+        icon: 'trash-2',
+        title: '4. Adding New Equipment or Removing Obsolete Units',
+        desc: 'Keep the laboratory asset register accurate as new devices arrive or old units are decommissioned.',
+        bullets: [
+          'Click "+ Add Medical Equipment" to add new parent systems and attach sub-components.',
+          'If a device is deemed obsolete or permanently decommissioned, click the red Trash icon on its row (or "Remove Obsolete Equipment" inside the Edit window) to permanently remove it.'
+        ]
+      },
+      {
+        step: 5,
+        icon: 'printer',
+        title: '5. Official Reports, Contingency Manual (SOP) & QR Access',
+        desc: 'Generate university-formatted documentation and instant mobile access for faculty and specialists.',
+        bullets: [
+          'Click "Official Report / Print" to download or print the A4 Inventory & Contingency Report (with Fault Reasons shown directly in the schedule).',
+          'Click "Contingency Manual" in the top bar for a 1-page printable SOP, or "QR Access" to print the Lab Door QR poster.'
+        ]
+      }
+    ];
+
+    function checkAndLaunchFirstTimeTutorial() {
+      try {
+        const seen = localStorage.getItem(TUTORIAL_SEEN_KEY);
+        if (!seen) {
+          openTutorialModal();
+        }
+      } catch (e) {}
+    }
+
+    window.openTutorialModal = function() {
+      state.tutorialStep = 0;
+      const checkbox = document.getElementById('tut-dont-show-again');
+      if (checkbox) {
+        checkbox.checked = localStorage.getItem(TUTORIAL_SEEN_KEY) === 'true';
+      }
+      renderTutorialStep();
+      document.getElementById('tutorial-modal').classList.remove('hidden');
+    };
+
+    window.closeTutorialModal = function() {
+      const checkbox = document.getElementById('tut-dont-show-again');
+      if (checkbox && checkbox.checked) {
+        try { localStorage.setItem(TUTORIAL_SEEN_KEY, 'true'); } catch (e) {}
+      }
+      document.getElementById('tutorial-modal').classList.add('hidden');
+    };
+
+    window.goToTutorialStep = function(idx) {
+      state.tutorialStep = idx;
+      renderTutorialStep();
+    };
+
+    window.nextTutorialStep = function() {
+      if (state.tutorialStep < TUTORIAL_STEPS.length - 1) {
+        state.tutorialStep++;
+        renderTutorialStep();
+      } else {
+        try { localStorage.setItem(TUTORIAL_SEEN_KEY, 'true'); } catch (e) {}
+        closeTutorialModal();
+      }
+    };
+
+    window.prevTutorialStep = function() {
+      if (state.tutorialStep > 0) {
+        state.tutorialStep--;
+        renderTutorialStep();
+      }
+    };
+
+    function renderTutorialStep() {
+      const s = TUTORIAL_STEPS[state.tutorialStep];
+      TUTORIAL_STEPS.forEach((_, idx) => {
+        const dot = document.getElementById(`tut-dot-${idx}`);
+        if (dot) {
+          dot.className = idx <= state.tutorialStep
+            ? 'flex-1 h-2 rounded-full bg-ksau-600 transition'
+            : 'flex-1 h-2 rounded-full bg-slate-200 transition';
+        }
+      });
+
+      const prevBtn = document.getElementById('tut-prev-btn');
+      const nextBtn = document.getElementById('tut-next-btn');
+      if (prevBtn) prevBtn.style.visibility = state.tutorialStep === 0 ? 'hidden' : 'visible';
+      if (nextBtn) {
+        nextBtn.textContent = state.tutorialStep === TUTORIAL_STEPS.length - 1
+          ? 'Finish Tutorial ✓'
+          : 'Next Step →';
+      }
+
+      const box = document.getElementById('tutorial-step-content');
+      box.innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-ksau-700 text-white flex items-center justify-center shadow">
+              <i data-lucide="${s.icon}" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-ksau-700">Step ${s.step} of ${TUTORIAL_STEPS.length}</span>
+              <h4 class="text-base font-extrabold text-slate-900">${s.title}</h4>
+            </div>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">${s.desc}</p>
+          <ul class="space-y-2 pt-1">
+            ${s.bullets.map(b => `
+              <li class="flex items-start gap-2 text-xs text-slate-800 bg-white p-2.5 rounded-xl border border-slate-200/80">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+                <span>${b}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // Concise Printable Contingency Instruction Manual Modal
+    window.openManualModal = function() {
+      renderAllLogos();
+      document.getElementById('manual-modal').classList.remove('hidden');
+      lucide.createIcons();
+    };
+
+    window.closeManualModal = function() {
+      document.body.classList.remove('printing-manual');
+      document.getElementById('manual-modal').classList.add('hidden');
+    };
+
+    window.downloadManualPdf = async function() {
+      const element = document.getElementById('printable-manual-area');
+      showToast('Generating Official Contingency Manual PDF...');
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'KSAU_HS_RT_Lab_Contingency_Instruction_Manual_SOP.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      await html2pdf().set(opt).from(element).save();
+      showToast('Contingency Instruction Manual PDF downloaded');
+    };
+
+    window.printManualDoc = function() {
+      document.body.classList.add('printing-manual');
+      window.print();
+      setTimeout(() => document.body.classList.remove('printing-manual'), 800);
     };
 
     // ================= 15. QR CODE MOBILE & DESKTOP ACCESS GENERATOR =================
@@ -2919,10 +3417,14 @@
           ['COLLEGE OF APPLIED MEDICAL SCIENCES (MALE) — RESPIRATORY THERAPY SKILLS LABS'],
           [`MEDICAL EQUIPMENT INVENTORY — ${sheetTitle} (Supervisor: Abdulrahman Mufti, RT Specialist)`],
           [],
-          ['Lab Number', 'SN', 'Record Type', 'Description', 'HTMS No.', 'KU No.', 'Model', 'Manufacturer', 'Operational Status']
+          ['Lab Number', 'SN', 'Record Type', 'Description', 'HTMS No.', 'KU No.', 'Model', 'Manufacturer', 'Operational Status', 'Fault Reason (Observation)', 'Contingency Action Plan']
         ];
 
         items.forEach(item => {
+          const linkedLog = state.logs.find(l => l.deviceId === item.id);
+          const faultReason = (item.status !== 'Operational' && linkedLog) ? String(linkedLog.issue) : '—';
+          const actionPlan = (item.status !== 'Operational' && linkedLog) ? String(linkedLog.action) : '—';
+
           rows.push([
             String(item.lab),
             String(item.sn),
@@ -2932,7 +3434,9 @@
             String(item.ku),
             String(item.model),
             String(item.mfg),
-            String(item.status)
+            String(item.status),
+            faultReason,
+            actionPlan
           ]);
           (item.subs || []).forEach(sub => {
             rows.push([
@@ -2944,15 +3448,18 @@
               String(sub.ku),
               String(sub.model),
               String(sub.mfg || item.mfg),
-              'Attached'
+              'Attached',
+              '—',
+              '—'
             ]);
           });
         });
 
         const ws = XLSX.utils.aoa_to_sheet(rows);
         ws['!cols'] = [
-          { wch: 15 }, { wch: 10 }, { wch: 16 }, { wch: 48 },
-          { wch: 16 }, { wch: 16 }, { wch: 24 }, { wch: 28 }, { wch: 22 }
+          { wch: 15 }, { wch: 10 }, { wch: 16 }, { wch: 46 },
+          { wch: 14 }, { wch: 14 }, { wch: 22 }, { wch: 26 },
+          { wch: 20 }, { wch: 38 }, { wch: 38 }
         ];
 
         const range = XLSX.utils.decode_range(ws['!ref']);
